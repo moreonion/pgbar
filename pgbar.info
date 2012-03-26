@@ -1,0 +1,5 @@
+name = Progress bar
+description = Enables you to build a progress bar based on webform submissions, number fields, …
+core = 7.x
+
+dependencies[] = webform

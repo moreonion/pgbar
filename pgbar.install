@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * Implements hook_field_schema()
+ */
+function pgbar_field_schema($field) {
+	if ($field['type'] == 'pgbar') {
+		$columns = array(
+			'target' => array(
+				'type' => 'int',
+				'not null' => FALSE,
+			),
+		);
+	}
+	return array(
+		'columns' => $columns,
+	);
+}
+
