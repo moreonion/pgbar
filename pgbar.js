@@ -12,7 +12,7 @@ $('.pgbar-wrapper').each(function() {
 	bars.width(0);
 
 	var initial_animation = function() {
-		bars.animate({width: percentage + '%'}, percentage);
+		bars.animate({width: percentage + '%'}, 500+10*percentage);
 	}
 
 	window.setTimeout(initial_animation, 2000);
