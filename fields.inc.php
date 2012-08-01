@@ -8,7 +8,7 @@ function pgbar_field_info() {
 		'label' => t('Progress bar'),
 		'description' => t('Allows you to display a progress bar based on two numbers: target and current'),
 		'settings' => array('style' => NULL),
-    'default_widget' => 'pgbar', 
+    'default_widget' => 'pgbar',
     'default_formatter' => 'pgbar',
 	);
 	return $info;
@@ -45,21 +45,26 @@ function pgbar_field_formatter_info() {
  * Implements hook_field_widget_form()
  */
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-	$old['target'] = NULL;
 	if (isset($items[$delta])) {
-		$old['target'] = $items[$delta]['target'];
+		$old = $items[$delta];
 	}
 	$element['target'] = array(
 		'#title' => t('Target value'),
 		'#description' => t('This is the value that is taken as 100%.'),
 		'#type' => 'textfield',
-		'#default_value' => $old['target'],
+		'#default_value' => isset($old['target']) ? $old['target'] : '',
 		'#size' => 60,
 		'#maxlength' => 60,
 		'#number_type' => 'integer',
-		'#required' => TRUE,
+		'#required' => FALSE,
 	);
 	$element['target']['#element_validate'][] = 'pgbar_number_validate';
+	$element['state'] = array(
+		'#title' => t('Show this progress bar!'),
+		'#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
+		'#type' => 'checkbox',
+		'#default_value' => isset($old['state']) ? $old['state'] : 0,
+	);
 
 	$element += array(
 		'#type' => 'fieldset',
@@ -72,15 +77,23 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
  */
 function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
 	module_load_include('inc', 'webform', 'includes/webform.submissions');
-	
-	$current = webform_get_submission_count($entity->nid);
+
+	$current = db_query('SELECT COUNT(ws.nid) FROM webform_submissions ws INNER JOIN node n USING (nid) WHERE n.nid=:nid OR n.nid=:tnid OR n.tnid=:tnid', array(':nid' => $entity->nid, ':tnid' => $entity->tnid))->fetchField();
+
 	$element = array();
 	foreach ($items as $delta => $item) {
-		$element[] = array (
+		// skip disabled items
+		if (!isset($item['state']) || !$item['state'])
+			continue;
+
+		$d = array (
 			'#theme' => 'pgbar',
-			'#target' => $item['target'],
 			'#current' => $current,
 		);
+		foreach ($item as $k => $v) {
+			$d['#'.$k] = $v;
+		}
+		$element[] = $d;
 	}
 	$element['#attached'] = array(
 		'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
