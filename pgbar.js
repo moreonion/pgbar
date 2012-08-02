@@ -2,21 +2,21 @@
 $(document).ready(function() {
 
 $('.pgbar-wrapper').each(function() {
-	var wrapper = $(this);
-	var current = parseFloat(wrapper.attr('data-pgbar-current'));
-	var target  = parseFloat(wrapper.attr('data-pgbar-target'));
-	var bars    = $('.pgbar-current', wrapper);
+  var wrapper = $(this);
+  var current = parseFloat(wrapper.attr('data-pgbar-current'));
+  var target  = parseFloat(wrapper.attr('data-pgbar-target'));
+  var bars    = $('.pgbar-current', wrapper);
 
-	var percentage = current / target * 100;
+  var percentage = current / target * 100;
 
-	bars.width(0);
+  bars.width(0);
 
-	var initial_animation = function() {
-		bars.animate({width: percentage + '%'}, 500+10*percentage);
-	}
+  var initial_animation = function() {
+    bars.animate({width: percentage + '%'}, 500+10*percentage);
+  }
 
-	window.setTimeout(initial_animation, 2000);
-	
+  window.setTimeout(initial_animation, 2000);
+  
 });
 
 });

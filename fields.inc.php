@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * Define the pgbar field type.
+ */
 
 /**
- * Implements hook_field_info()
+ * Implements hook_field_info().
  */
 function pgbar_field_info() {
   $info['pgbar'] = array(
@@ -15,7 +19,7 @@ function pgbar_field_info() {
 }
 
 /**
- * Implements hook_field_widget_info()
+ * Implements hook_field_widget_info().
  */
 function pgbar_field_widget_info() {
   $info['pgbar'] = array(
@@ -31,7 +35,7 @@ function pgbar_field_widget_info() {
 }
 
 /**
- * Implements hook_field_formatter_info()
+ * Implements hook_field_formatter_info().
  */
 function pgbar_field_formatter_info() {
   $info['pgbar'] = array(
@@ -42,7 +46,7 @@ function pgbar_field_formatter_info() {
 }
 
 /**
- * Implements hook_field_widget_form()
+ * Implements hook_field_widget_form().
  */
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   if (isset($items[$delta])) {
@@ -73,7 +77,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
 }
 
 /**
- * Implements hook_field_formatter_view()
+ * Implements hook_field_formatter_view().
  */
 function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   module_load_include('inc', 'webform', 'includes/webform.submissions');
@@ -82,16 +86,17 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 
   $element = array();
   foreach ($items as $delta => $item) {
-    // skip disabled items
-    if (!isset($item['state']) || !$item['state'])
+    // Skip disabled items.
+    if (!isset($item['state']) || !$item['state']) {
       continue;
+    }
 
-    $d = array (
+    $d = array(
       '#theme' => 'pgbar',
       '#current' => $current,
     );
     foreach ($item as $k => $v) {
-      $d['#'.$k] = $v;
+      $d["#$k"] = $v;
     }
     $element[] = $d;
   }
@@ -102,12 +107,15 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 }
 
 /**
- * Implements hook_field_is_empty()
+ * Implements hook_field_is_empty().
  */
 function pgbar_field_is_empty($item, $field) {
   return empty($item['target']);
 }
 
+/**
+ * Validation callback for the pgbar field.
+ */
 function pgbar_number_validate($element, &$form_state, $form) {
   if (!is_numeric($element['#value']) || $element['#value'] == '') {
     form_error($element, t('The field "!name" has to be a number.', array('!name' => t($element['#title']))));

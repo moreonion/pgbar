@@ -1,26 +1,39 @@
 <?php
+/**
+ * @file
+ * The main module file for the pgbar module.
+ *
+ * - Defines the pgbar theme function.
+ */
 
 require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'pgbar') . '/fields.inc.php';
 
 /**
- * Implements hook_theme()
+ * Implements hook_theme().
  */
 function pgbar_theme() {
-	$hooks['pgbar'] = array(
-		'variables' => array('current' => 0, 'target' => 0, 'style' => NULL, 'strings' => array()),
-		'template'  => 'pgbar',
-	);
-	return $hooks;
+  $vars = array(
+    'current' => 0,
+    'target' => 0,
+    'style' => NULL,
+    'strings' => array(),
+  );
+  $hooks['pgbar'] = array(
+    'variables' => $vars,
+    'template'  => 'pgbar',
+  );
+  return $hooks;
 }
 
+/**
+ * Theme preprocess function for pgbar.
+ */
 function pgbar_preprocess_pgbar(&$v) {
-	$v['goal_reached'] = $v['current'] >= $v['target'];
+  $v['goal_reached'] = $v['current'] >= $v['target'];
 
-	if ($v['style']) {
-		$v['theme_hook_suggestions'][] = 'pgbar__' . $v['style'];
-	}
+  if ($v['style']) {
+    $v['theme_hook_suggestions'][] = 'pgbar__' . $v['style'];
+  }
 
-	$v['percentage'] = $v['current'] / $v['target'] * 100;
-	
+  $v['percentage'] = $v['current'] / $v['target'] * 100;
 }
-

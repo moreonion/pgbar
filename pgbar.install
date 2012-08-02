@@ -1,49 +1,52 @@
 <?php
+/**
+ * @file
+ * Install and update hooks for the pgbar module.
+ */
 
 /**
- * Implements hook_field_schema()
+ * Implements hook_field_schema().
  */
 function pgbar_field_schema($field) {
-	if ($field['type'] == 'pgbar') {
-		$columns['target'] = array(
-			'type' => 'int',
-			'not null' => FALSE,
-			'default' => 1,
-		);
-		$columns['state'] = array(
-			'type' => 'int',
-			'not null' => FALSE,
-			'default' => 0,
-		);
-	}
-	return array(
-		'columns' => $columns,
-	);
+  if ($field['type'] == 'pgbar') {
+    $columns['target'] = array(
+      'type' => 'int',
+      'not null' => FALSE,
+      'default' => 1,
+    );
+    $columns['state'] = array(
+      'type' => 'int',
+      'not null' => FALSE,
+      'default' => 0,
+    );
+  }
+  return array(
+    'columns' => $columns,
+  );
 }
 
 /**
- * Add the state field to all progress bars 
+ * Add the state field to all progress bars.
  */
 function pgbar_update_7001() {
-	$field = array(
-		'type' => 'int',
-		'not null' => FALSE,
-		'default' => 0,
-	);
-	$res = db_query('SELECT field_name, data FROM field_config WHERE type=:type', array(':type' => 'pgbar'));
-	$tables = array();
-	foreach ($res as $row) {
-		$data = unserialize($row->data);
-		if (($d = $data['storage']) && $d['type'] == 'field_sql_storage') {
-			foreach ($d['details']['sql'] as $t) {
-				foreach (array_keys($t) as $table) {
-					$tables[$table] = $row->field_name;
-				}
-			}
-		}
-	}
-	foreach ($tables as $table => $field_name) {
-		db_add_field($table, $field_name . '_state', $field);
-	}
+  $field = array(
+    'type' => 'int',
+    'not null' => FALSE,
+    'default' => 0,
+  );
+  $res = db_query('SELECT field_name, data FROM field_config WHERE type=:type', array(':type' => 'pgbar'));
+  $tables = array();
+  foreach ($res as $row) {
+    $data = unserialize($row->data);
+    if (($d = $data['storage']) && $d['type'] == 'field_sql_storage') {
+      foreach ($d['details']['sql'] as $t) {
+        foreach (array_keys($t) as $table) {
+          $tables[$table] = $row->field_name;
+        }
+      }
+    }
+  }
+  foreach ($tables as $table => $field_name) {
+    db_add_field($table, $field_name . '_state', $field);
+  }
 }
-
