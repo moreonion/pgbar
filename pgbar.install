@@ -44,9 +44,14 @@ function pgbar_update_7001() {
           $tables[$table] = $row->field_name;
         }
       }
+      if (!isset($d['details'])) {
+        $tables['field_data_' . $row->field_name] = $row->field_name;
+        $tables['field_revision_' . $row->field_name] = $row->field_name;
+      }
     }
   }
   foreach ($tables as $table => $field_name) {
     db_add_field($table, $field_name . '_state', $field);
   }
 }
+
