@@ -3,3 +3,4 @@ description = Enables you to build a progress bar based on webform submissions, 
 core = 7.x
 
 dependencies[] = webform
+dependencies[] = form_helper

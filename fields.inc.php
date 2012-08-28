@@ -1,4 +1,6 @@
 <?php
+// vim: set filetype=php expandtab tabstop=2 shiftwidth=2 autoindent smartindent:
+// kate: tab-indents true; indent-width 4; tab-width 4; mixedindent off; ident-mode cstyle; replace-tabs on;
 /**
  * @file
  * Define the pgbar field type.
@@ -52,8 +54,26 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   if (isset($items[$delta])) {
     $old = $items[$delta];
   }
-  $element['target'] = array(
-    '#title' => t('Target value'),
+  $element['state'] = array(
+    '#title' => t('Display a progress bar'),
+    '#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
+    '#type' => 'checkbox',
+    '#default_value' => isset($old['state']) ? $old['state'] : 0,
+  );
+  $element['options'] = array(
+    '#type' => 'vertical_tabs',
+    '#title' => t('Progress bar'),
+    'target' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Target value'),
+    ),
+    'texts' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Texts'),
+    ),
+  );
+  $element['options']['target']['target'] = array(
+    '#title' => t('Target value & display'),
     '#description' => t('This is the value that is taken as 100%.'),
     '#type' => 'textfield',
     '#default_value' => isset($old['target']) ? $old['target'] : '',
@@ -62,17 +82,28 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#number_type' => 'integer',
     '#required' => FALSE,
   );
-  $element['target']['#element_validate'][] = 'pgbar_number_validate';
-  $element['state'] = array(
-    '#title' => t('Show this progress bar!'),
-    '#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
-    '#type' => 'checkbox',
-    '#default_value' => isset($old['state']) ? $old['state'] : 0,
+  $element['options']['texts']['intro_message'] = array(
+    '#title' => t('Intro message'),
+    '#description' => t('This is the message that is displayed above the progress bar.'),
+    '#type' => 'textarea',
+    '#rows' => 2,
+    '#default_value' => 'We need !target signatures.',
   );
+  $element['options']['texts']['status_message'] = array(
+    '#title' => t('Status message'),
+    '#description' => t('This is the message that\'s displayed below the progress bar, usually telling the user how much progress has been made already.'),
+    '#type' => 'textarea',
+    '#rows' => 2,
+    '#default_value' => 'Already !current of !target signed the petition.',
+  );
+
+  $element['options']['target']['target']['#element_validate'][] = 'pgbar_number_validate';
 
   $element += array(
     '#type' => 'fieldset',
+    '#title' => t('Progress bar'),
   );
+
   return $element;
 }
 
@@ -110,6 +141,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
  * Implements hook_field_is_empty().
  */
 function pgbar_field_is_empty($item, $field) {
+  //kpr($item);
   return empty($item['target']);
 }
 
