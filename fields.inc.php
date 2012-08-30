@@ -58,7 +58,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Display a progress bar'),
     '#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
     '#type' => 'checkbox',
-    '#default_value' => isset($old['state']) ? $old['state'] : 0,
+    '#default_value' => isset($old['state']) ? $old['state'] : 1,
   );
   $element['options'] = array(
     '#type' => 'vertical_tabs',
