@@ -76,7 +76,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Target value & display'),
     '#description' => t('This is the value that is taken as 100%.'),
     '#type' => 'textfield',
-    '#default_value' => isset($old['target']) ? $old['target'] : '',
+    '#default_value' => isset($old['options']['target']['target']) ? $old['options']['target']['target'] : '',
     '#size' => 60,
     '#maxlength' => 60,
     '#number_type' => 'integer',
@@ -86,18 +86,16 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Intro message'),
     '#description' => t('This is the message that is displayed above the progress bar.'),
     '#type' => 'textarea',
+    '#default_value' => isset($old['options']['texts']['intro_message']) ? $old['options']['texts']['intro_message'] : 'We need !target signatures.',
     '#rows' => 2,
-    '#default_value' => 'We need !target signatures.',
   );
   $element['options']['texts']['status_message'] = array(
     '#title' => t('Status message'),
     '#description' => t('This is the message that\'s displayed below the progress bar, usually telling the user how much progress has been made already.'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => 'Already !current of !target signed the petition.',
+    '#default_value' => isset($old['options']['texts']['status_message']) ? $old['options']['texts']['status_message'] : 'Already !current of !target signed the petition.',
   );
-
-  $element['options']['target']['target']['#element_validate'][] = 'pgbar_number_validate';
 
   $element += array(
     '#type' => 'fieldset',
@@ -125,10 +123,9 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $d = array(
       '#theme' => 'pgbar',
       '#current' => $current,
+      '#target' => $item['options']['target']['target'],
+      '#texts' => $item['options']['texts'],
     );
-    foreach ($item as $k => $v) {
-      $d["#$k"] = $v;
-    }
     $element[] = $d;
   }
   $element['#attached'] = array(
@@ -141,8 +138,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
  * Implements hook_field_is_empty().
  */
 function pgbar_field_is_empty($item, $field) {
-  //kpr($item);
-  return empty($item['target']);
+  return empty($item['options']['target']['target']);
 }
 
 /**
@@ -151,5 +147,39 @@ function pgbar_field_is_empty($item, $field) {
 function pgbar_number_validate($element, &$form_state, $form) {
   if (!is_numeric($element['#value']) || $element['#value'] == '') {
     form_error($element, t('The field "!name" has to be a number.', array('!name' => t($element['#title']))));
+  }
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function pgbar_field_validate($entity_type, $entity, $field, $instance, $langcode, &$items, &$errors) {
+}
+
+/**
+ * Implements hook_field_presave().
+ */
+function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
+  if ($field['type'] == 'pgbar') {
+    foreach ($items as &$item) {
+      $options = array();
+      foreach (array('target', 'texts') as $k) {
+        $options[$k] = $item['options'][$k];
+      }
+      $item['options'] = serialize($options);
+    }
+  }
+}
+
+/**
+ * Implements hook_field_load().
+ */
+function pgbar_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
+  if ($field['type'] == 'pgbar') {
+    foreach ($entities as $id => $entity) {
+      foreach ($items[$id] as &$item) {
+        $item['options'] = unserialize($item['options']);
+      }
+    }
   }
 }

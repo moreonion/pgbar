@@ -9,10 +9,10 @@
  */
 function pgbar_field_schema($field) {
   if ($field['type'] == 'pgbar') {
-    $columns['target'] = array(
-      'type' => 'int',
+    $columns['options'] = array(
+      'type' => 'blob',
       'not null' => FALSE,
-      'default' => 1,
+      'serialize' => TRUE,
     );
     $columns['state'] = array(
       'type' => 'int',
@@ -26,6 +26,24 @@ function pgbar_field_schema($field) {
 }
 
 /**
+ * Replace target with generic config field
+ */
+function pgbar_update_7002() {
+  $tables = _pgbar_field_tables();
+  $field = array(
+    'type' => 'text',
+    'not null' => FALSE,
+  );
+  $tables = _pgbar_field_tables();
+  foreach ($tables as $table => $field_name) {
+    db_add_field($table, $field_name . '_options', $field);
+    // serialize(array('target' => $i)) == 'a:1:{s:6:"target";i:$1;}'
+    db_query("UPDATE $table SET {$field_name}_options='a:1:{s:6:\"target\";i:'+{$field_name}_target+';}'");
+    db_drop_field($table, $field_name . '_target');
+  }
+}
+
+/**
  * Add the state field to all progress bars.
  */
 function pgbar_update_7001() {
@@ -34,24 +52,29 @@ function pgbar_update_7001() {
     'not null' => FALSE,
     'default' => 0,
   );
-  $res = db_query('SELECT field_name, data FROM field_config WHERE type=:type', array(':type' => 'pgbar'));
-  $tables = array();
-  foreach ($res as $row) {
-    $data = unserialize($row->data);
-    if (($d = $data['storage']) && $d['type'] == 'field_sql_storage') {
-      foreach ($d['details']['sql'] as $t) {
-        foreach (array_keys($t) as $table) {
-          $tables[$table] = $row->field_name;
-        }
-      }
-      if (!isset($d['details'])) {
-        $tables['field_data_' . $row->field_name] = $row->field_name;
-        $tables['field_revision_' . $row->field_name] = $row->field_name;
-      }
-    }
-  }
+  $tables = _pgbar_field_tables();
   foreach ($tables as $table => $field_name) {
     db_add_field($table, $field_name . '_state', $field);
   }
 }
 
+function _pgbar_field_tables() {
+  $res = db_query('SELECT field_name, data FROM field_config WHERE type=:type', array(':type' => 'pgbar'));
+  $tables = array();
+  foreach ($res as $row) {
+    $data = unserialize($row->data);
+    if (($d = $data['storage']) && $d['type'] == 'field_sql_storage') {
+      if (isset($d['details'])) {
+        foreach ($d['details']['sql'] as $t) {
+          foreach (array_keys($t) as $table) {
+            $tables[$table] = $row->field_name;
+          }
+        }
+      } else {
+        $tables['field_data_' . $row->field_name] = $row->field_name;
+        $tables['field_revision_' . $row->field_name] = $row->field_name;
+      }
+    }
+  }
+  return $tables; 
+}

@@ -16,7 +16,7 @@ function pgbar_theme() {
     'current' => 0,
     'target' => 0,
     'style' => NULL,
-    'strings' => array(),
+    'texts' => array(),
   );
   $hooks['pgbar'] = array(
     'variables' => $vars,
