@@ -73,14 +73,19 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     ),
   );
   $element['options']['target']['target'] = array(
-    '#title' => t('Target value & display'),
-    '#description' => t('This is the value that is taken as 100%.'),
+    '#title' => t('Target value steps (comma separated)'),
+    '#description' => t('The target value for the progress bar is automatically increased using these steps.'),
     '#type' => 'textfield',
-    '#default_value' => isset($old['options']['target']['target']) ? $old['options']['target']['target'] : '',
+    '#default_value' => isset($old['options']['target']['target']) ? implode(',', $old['options']['target']['target']) : '',
     '#size' => 60,
     '#maxlength' => 60,
+  );
+  $element['options']['target']['threshold'] = array(
+    '#title' => t('Threshold percentage'),
+    '#description' => t('Use the smallest step from the above setting that is not yet reached to this percentage.'),
+    '#type' => 'textfield',
     '#number_type' => 'integer',
-    '#required' => FALSE,
+    '#default_value' => isset($old['options']['target']['threshold']) ? $old['options']['target']['threshold'] : '90',
   );
   $element['options']['texts']['intro_message'] = array(
     '#title' => t('Intro message'),
@@ -123,7 +128,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $d = array(
       '#theme' => 'pgbar',
       '#current' => $current,
-      '#target' => $item['options']['target']['target'],
+      '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
       '#texts' => $item['options']['texts'],
     );
     $element[] = $d;
@@ -132,6 +137,23 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
   );
   return $element;
+}
+
+/**
+ * Get the first target that is not too close (as defined by percentage).
+ * @param $targets array of targets
+ * @param $current current value
+ * @param $percentage at which to switch to the next target value
+ */
+function _pgbar_select_target($targets, $current, $percentage) {
+  $t = 1;
+  while (count($targets)) {
+    $t = array_shift($targets);
+    if ($current * 100 / $t <= $percentage) {
+      return $t;
+    }
+  }
+  return $t;
 }
 
 /**
@@ -166,6 +188,11 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
       foreach (array('target', 'texts') as $k) {
         $options[$k] = $item['options'][$k];
       }
+      $targets = array();
+      foreach (explode(',', $options['target']['target']) as $n) {
+        $targets[] = (int) $n;
+      }
+      $options['target']['target'] = $targets;
       $item['options'] = serialize($options);
     }
   }
