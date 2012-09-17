@@ -8,8 +8,8 @@ $vars['!current'] = '<strong>' . number_format($current, 0) . '</strong>';
 $vars['!target'] = '<strong>' . number_format($target, 0) . '</strong>';
 $vars['!needed'] = number_format($target - $current, 0);
 
-$intro_message  = t($texts['intro_message'], $vars);
-$status_message = ($goal_reached ? t("We've reached our goal!") : t($texts['status_message'], $vars)) . "\n";
+$intro_message  = t($goal_reached ? $texts['full_intro_message']  : $texts['intro_message'], $vars);
+$status_message = t($goal_reached ? $texts['full_status_message'] : $texts['status_message'], $vars) . "\n";
 ?>
 <div class="pgbar-wrapper" data-pgbar-current="<?php print $current; ?>" data-pgbar-target="<?php print $target; ?>">
   <p><?php print $intro_message; ?></p>

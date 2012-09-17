@@ -104,6 +104,20 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#rows' => 2,
     '#default_value' => isset($old['options']['texts']['status_message']) ? $old['options']['texts']['status_message'] : 'Already !current of !target signed the petition.',
   );
+  $element['options']['texts']['full_intro_messages'] = array(
+    '#title' => t('Intro message at 100% (or above)'),
+    '#description' => t('Intro message when the target is reached (or overreached).'),
+    '#type' => 'textarea',
+    '#rows' => 2,
+    '#default_value' => isset($old['options']['texts']['full_intro_messages']) ? $old['options']['texts']['full_intro_messages'] : "Thanks for your support!",
+  );
+  $element['options']['texts']['full_status_messages'] = array(
+    '#title' => t('Status message at 100% (or above)'),
+    '#description' => t('Status message when the target is reached (or overreached).'),
+    '#type' => 'textarea',
+    '#rows' => 2,
+    '#default_value' => isset($old['options']['texts']['full_status_messages']) ? $old['options']['texts']['full_status_messages'] : "We've reached our goal of !target supports.",
+  );
 
   $element += array(
     '#type' => 'fieldset',
