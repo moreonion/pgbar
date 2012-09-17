@@ -35,5 +35,5 @@ function pgbar_preprocess_pgbar(&$v) {
     $v['theme_hook_suggestions'][] = 'pgbar__' . $v['style'];
   }
 
-  $v['percentage'] = $v['current'] / $v['target'] * 100;
+  $v['percentage'] = min(array($v['current'] / $v['target'] * 100, 100));
 }
