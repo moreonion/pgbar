@@ -71,6 +71,9 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       '#type' => 'fieldset',
       '#title' => t('Texts'),
     ),
+    '#states' => array(
+      'invisible' => array("#edit-field-petition-pgbar-und-$delta-state" => array('checked' => FALSE)),
+    ),
   );
   $element['options']['target']['target'] = array(
     '#title' => t('Target value steps (comma separated)'),
