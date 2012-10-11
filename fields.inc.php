@@ -205,11 +205,13 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
       foreach (array('target', 'texts') as $k) {
         $options[$k] = $item['options'][$k];
       }
-      $targets = array();
-      foreach (explode(',', $options['target']['target']) as $n) {
-        $targets[] = (int) $n;
+      if (!is_array($options['target']['target'])) {
+        $targets = array();
+        foreach (explode(',', $options['target']['target']) as $n) {
+          $targets[] = (int) $n;
+        }
+        $options['target']['target'] = $targets;
       }
-      $options['target']['target'] = $targets;
       $item['options'] = serialize($options);
     }
   }
