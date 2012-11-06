@@ -90,13 +90,6 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#number_type' => 'integer',
     '#default_value' => isset($old['options']['target']['threshold']) ? $old['options']['target']['threshold'] : '90',
   );
-  $element['options']['target']['offset'] = array(
-    '#title' => t('Collected offline'),
-    '#description' => t('Add a constant offset to the number shown by the progress bar.'),
-    '#type' => 'textfield',
-    '#nimber_type' => 'integer',
-    '#default_value' => isset($old['options']['target']['target']) ? $old['options']['target']['target'] : 0,
-  );
   $element['options']['texts']['intro_message'] = array(
     '#title' => t('Intro message'),
     '#description' => t('This is the message that is displayed above the progress bar.'),
@@ -149,7 +142,6 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       continue;
     }
 
-    $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
     $d = array(
       '#theme' => 'pgbar',
       '#current' => $current,
