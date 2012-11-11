@@ -47,6 +47,18 @@ function pgbar_field_formatter_info() {
   return $info;
 }
 
+function _pgbar_source_plugin_load($entity, $field, $instance) {
+  ctools_include('plugins');
+  if (isset($instance['settings']['source'])) {
+    $plugin = ctools_get_plugins('pgbar', 'source', $instance['settings']['source']);
+    $class = ctools_plugin_get_class($plugin, 'handler');
+  } else {
+    require_once dirname(__FILE__) . '/plugins/source/webform_submissions.inc.php';
+    $class = 'PgbarSourceWebformSubmissions';
+  }
+  return new $class($entity, $field, $instance);
+}
+
 /**
  * Implements hook_field_widget_form().
  */
@@ -70,6 +82,10 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     'texts' => array(
       '#type' => 'fieldset',
       '#title' => t('Texts'),
+    ),
+    'source' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Counter source'),
     ),
     '#states' => array(
       'invisible' => array("#edit-field-petition-pgbar-und-$delta-state" => array('checked' => FALSE)),
@@ -126,6 +142,13 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#default_value' => isset($old['options']['texts']['full_status_messages']) ? $old['options']['texts']['full_status_messages'] : "We've reached our goal of !target supports.",
   );
 
+  $source = _pgbar_source_plugin_load(NULL, $field, $instance);
+  if ($source_form = $source->widgetForm(isset($items[$delta]) ? $items[$delta] : NULL)) {
+    $element['options']['source'] += $source_form;
+  } else {
+    $element['options']['source']['#access'] = FALSE;
+  }
+
   $element += array(
     '#type' => 'fieldset',
     '#title' => t('Progress bar'),
@@ -140,10 +163,11 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
 function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   module_load_include('inc', 'webform', 'includes/webform.submissions');
 
-  $current = db_query('SELECT COUNT(ws.nid) FROM webform_submissions ws INNER JOIN node n USING (nid) WHERE n.nid=:nid OR n.nid=:tnid OR n.tnid=:tnid', array(':nid' => $entity->nid, ':tnid' => $entity->tnid))->fetchField();
+  $source = _pgbar_source_plugin_load($entity, $field, $instance);
 
   $element = array();
   foreach ($items as $delta => $item) {
+    $current = $source->getValue($item);
     // Skip disabled items.
     if (!isset($item['state']) || !$item['state']) {
       continue;
@@ -210,7 +234,7 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
   if ($field['type'] == 'pgbar') {
     foreach ($items as &$item) {
       $options = array();
-      foreach (array('target', 'texts') as $k) {
+      foreach (array('target', 'texts', 'source') as $k) {
         $options[$k] = $item['options'][$k];
       }
       if (!is_array($options['target']['target'])) {
@@ -235,5 +259,34 @@ function pgbar_field_load($entity_type, $entities, $field, $instances, $langcode
         $item['options'] = unserialize($item['options']);
       }
     }
+  }
+}
+
+/**
+ * Implements hook_field_instance_settings_form().
+ */
+function pgbar_field_instance_settings_form($field, $instance) {
+  $settings = &$instance['settings'];
+
+  $form = array();
+  $form['source'] = array(
+    '#type' => 'select',
+    '#title' => t('Data source'),
+    '#description' => 'These plugins decide where the data for the current progress bar value come from',
+  );
+
+  $sources = ctools_get_plugins('pgbar', 'source');
+  $options = array();
+  foreach ($sources as $id => $source) {
+    $options[$id] = $source['label'];
+  }
+  $form['source']['#options'] = $options;
+
+  return $form;
+}
+
+function pgbar_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'pgbar' && $plugin == 'source') {
+    return 'plugins/source';
   }
 }

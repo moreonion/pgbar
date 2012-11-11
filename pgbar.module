@@ -37,3 +37,14 @@ function pgbar_preprocess_pgbar(&$v) {
 
   $v['percentage'] = min(array($v['current'] / $v['target'] * 100, 100));
 }
+
+/**
+ * Implements ctools_plugin_type().
+ */
+function pgbar_ctools_plugin_type() {
+  $types['source'] = array(
+    'cache' => TRUE,
+    'extension' => 'inc.php',
+  );
+  return $types;
+}
