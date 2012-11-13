@@ -9,10 +9,16 @@ $('.pgbar-wrapper').each(function() {
 
   var percentage = current / target * 100;
 
-  bars.width(0);
-
-  var initial_animation = function() {
-    bars.animate({width: percentage + '%'}, 500+10*percentage);
+  if (wrapper.attr('data-pgbar-mode') == 'vertical') {
+    bars.height(0);
+    var initial_animation = function() {
+      bars.animate({height: percentage + '%'}, 500+10*percentage);
+    }
+  } else {
+    bars.width(0);
+    var initial_animation = function() {
+      bars.animate({width: percentage + '%'}, 500+10*percentage);
+    }
   }
 
   window.setTimeout(initial_animation, 2000);
