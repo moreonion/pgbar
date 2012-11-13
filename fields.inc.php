@@ -173,12 +173,15 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       continue;
     }
 
+    $theme = array();
     $theme = array('pgbar__' . $entity_type, 'pgbar');
     if ($entity instanceof Entity) {
-      array_unshift($theme, implode('__', array('pgbar', $entity_type, $entity->bundle())));
+      $theme[] = 'pgbar__' . $entity_type . '__' . $entity->bundle();
     } elseif ($entity_type == 'node') {
-      array_unshift($theme, implode('__', array('pgbar', $entity_type, $entity->type)));
+      $theme[] = 'pgbar__' . $entity_type . '__' . $entity->type;
     }
+    $theme[] = 'pgbar__' . $entity_type;
+    $theme[] = 'pgbar';
     $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
     $d = array(
       '#theme' => $theme,
