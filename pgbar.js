@@ -7,17 +7,24 @@ $('.pgbar-wrapper').each(function() {
   var target  = parseFloat(wrapper.attr('data-pgbar-target'));
   var bars    = $('.pgbar-current', wrapper);
 
-  var percentage = current / target * 100;
-
-  if (wrapper.attr('data-pgbar-mode') == 'vertical') {
-    bars.height(0);
+  if (wrapper.attr('data-pgbar-inverted') == 'true') {
+    var from = 1;
+    var to = 1 - current / target;
+    var diff = from - to;
+  } else {
+    var from = 0;
+    var to = current / target;
+    var diff = to - from;
+  }
+  if (wrapper.attr('data-pgbar-direction') == 'vertical') {
+    bars.height(from*100 + '%');
     var initial_animation = function() {
-      bars.animate({height: percentage + '%'}, 500+10*percentage);
+      bars.animate({height: to*100 + '%'}, 500+1000*diff);
     }
   } else {
-    bars.width(0);
+    bars.width(from*100 + '%');
     var initial_animation = function() {
-      bars.animate({width: percentage + '%'}, 500+10*percentage);
+      bars.animate({width: to*100 + '%'}, 500+1000*diff);
     }
   }
 
