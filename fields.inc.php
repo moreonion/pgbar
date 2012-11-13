@@ -173,9 +173,15 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       continue;
     }
 
+    $theme = array('pgbar__' . $entity_type, 'pgbar');
+    if ($entity instanceof Entity) {
+      array_unshift($theme, implode('__', array('pgbar', $entity_type, $entity->bundle())));
+    } elseif ($entity_type == 'node') {
+      array_unshift($theme, implode('__', array('pgbar', $entity_type, $entity->type)));
+    }
     $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
     $d = array(
-      '#theme' => 'pgbar',
+      '#theme' => $theme,
       '#current' => $current,
       '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
       '#texts' => $item['options']['texts'],
