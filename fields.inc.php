@@ -174,7 +174,6 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     }
 
     $theme = array();
-    $theme = array('pgbar__' . $entity_type, 'pgbar');
     if ($entity instanceof Entity) {
       $theme[] = 'pgbar__' . $entity_type . '__' . $entity->bundle();
     } elseif ($entity_type == 'node') {
