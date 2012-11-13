@@ -111,7 +111,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#description' => t('Add a constant offset to the number shown by the progress bar.'),
     '#type' => 'textfield',
     '#nimber_type' => 'integer',
-    '#default_value' => isset($old['options']['target']['target']) ? $old['options']['target']['target'] : 0,
+    '#default_value' => isset($old['options']['target']['offset']) ? $old['options']['target']['offset'] : 0,
   );
   $element['options']['texts']['intro_message'] = array(
     '#title' => t('Intro message'),
@@ -235,6 +235,8 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
     foreach ($items as &$item) {
       $options = array();
       foreach (array('target', 'texts', 'source') as $k) {
+        if (!isset($item['options'][$k]))
+          continue;
         $options[$k] = $item['options'][$k];
       }
       if (!is_array($options['target']['target'])) {
