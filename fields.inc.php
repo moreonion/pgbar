@@ -1,10 +1,22 @@
 <?php
 // vim: set filetype=php expandtab tabstop=2 shiftwidth=2 autoindent smartindent:
-// kate: tab-indents true; indent-width 4; tab-width 4; mixedindent off; ident-mode cstyle; replace-tabs on;
 /**
  * @file
  * Define the pgbar field type.
  */
+
+function _pgbar_merge_into(&$a, $b) {
+    foreach($b as $k => $v) {
+        if(array_key_exists($k, $a))
+            if (is_array($v))
+                $a[$k] = _pgbar_merge_into($a[$k], $b[$k]);
+            else
+                ; //ignore value in $b
+                else
+                    $a[$k] = $v;
+    }
+    return $a;
+}
 
 /**
  * Implements hook_field_info().
@@ -63,14 +75,40 @@ function _pgbar_source_plugin_load($entity, $field, $instance) {
  * Implements hook_field_widget_form().
  */
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
+  $item = array();
   if (isset($items[$delta])) {
-    $old = $items[$delta];
+    _pgbar_merge_into($item, $items[$delta]);
+    if (isset($item['options']['target']['target']) && is_array($item['options']['target']['target'])) {
+      $item['options']['target']['target'] = implode(',', $item['options']['target']['target']);
+    }
   }
+  if (isset($instance['default_value'][$delta]))
+    _pgbar_merge_into($item, $instance['default_value'][$delta]);
+  _pgbar_merge_into($item, array(
+    'state' => 1,
+    'options' => array(
+      'target' => array(
+        'target'    => '',
+        'threshold' => '90',
+        'offset'    => '0',
+      ),
+      'texts' => array(
+        'intro_message'       => 'We need !target signatures.',
+        'full_intro_message'  => 'Thanks for your support!',
+        'status_message'      => 'Already !current of !target signed the petition.',
+        'full_status_message' => "We've reached our goal of !target supports.",
+      ),
+      'display' => array(
+        'template' => '',
+      ),
+    ),
+  ));
+
   $element['state'] = array(
     '#title' => t('Display a progress bar'),
     '#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
     '#type' => 'checkbox',
-    '#default_value' => isset($old['state']) ? $old['state'] : 1,
+    '#default_value' => $item['state'],
   );
   $element['options'] = array(
     '#type' => 'vertical_tabs',
@@ -87,6 +125,10 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       '#type' => 'fieldset',
       '#title' => t('Counter source'),
     ),
+    'display' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Display'),
+    ),
     '#states' => array(
       'invisible' => array("#edit-field-petition-pgbar-und-$delta-state" => array('checked' => FALSE)),
     ),
@@ -95,7 +137,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Target value steps (comma separated)'),
     '#description' => t('The target value for the progress bar is automatically increased using these steps.'),
     '#type' => 'textfield',
-    '#default_value' => isset($old['options']['target']['target']) ? implode(',', $old['options']['target']['target']) : '',
+    '#default_value' => $item['options']['target']['target'],
     '#size' => 60,
     '#maxlength' => 60,
   );
@@ -104,20 +146,20 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#description' => t('Use the smallest step from the above setting that is not yet reached to this percentage.'),
     '#type' => 'textfield',
     '#number_type' => 'integer',
-    '#default_value' => isset($old['options']['target']['threshold']) ? $old['options']['target']['threshold'] : '90',
+    '#default_value' => $item['options']['target']['threshold'],
   );
   $element['options']['target']['offset'] = array(
     '#title' => t('Collected offline'),
     '#description' => t('Add a constant offset to the number shown by the progress bar.'),
     '#type' => 'textfield',
     '#nimber_type' => 'integer',
-    '#default_value' => isset($old['options']['target']['offset']) ? $old['options']['target']['offset'] : 0,
+    '#default_value' => $item['options']['target']['offset'],
   );
   $element['options']['texts']['intro_message'] = array(
     '#title' => t('Intro message'),
     '#description' => t('This is the message that is displayed above the progress bar.'),
     '#type' => 'textarea',
-    '#default_value' => isset($old['options']['texts']['intro_message']) ? $old['options']['texts']['intro_message'] : 'We need !target signatures.',
+    '#default_value' => $item['options']['texts']['intro_message'],
     '#rows' => 2,
   );
   $element['options']['texts']['status_message'] = array(
@@ -125,23 +167,27 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#description' => t('This is the message that\'s displayed below the progress bar, usually telling the user how much progress has been made already.'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => isset($old['options']['texts']['status_message']) ? $old['options']['texts']['status_message'] : 'Already !current of !target signed the petition.',
+    '#default_value' => $item['options']['texts']['status_message'],
   );
   $element['options']['texts']['full_intro_messages'] = array(
     '#title' => t('Intro message at 100% (or above)'),
     '#description' => t('Intro message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => isset($old['options']['texts']['full_intro_messages']) ? $old['options']['texts']['full_intro_messages'] : "Thanks for your support!",
+    '#default_value' => $item['options']['texts']['full_intro_messages'],
   );
   $element['options']['texts']['full_status_messages'] = array(
     '#title' => t('Status message at 100% (or above)'),
     '#description' => t('Status message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => isset($old['options']['texts']['full_status_messages']) ? $old['options']['texts']['full_status_messages'] : "We've reached our goal of !target supports.",
+    '#default_value' => $item['options']['texts']['full_status_messages'],
   );
-
+  $element['options']['display']['template'] = array(
+    '#title' => t('Style'),
+    '#description' => t('This field is handed over to the theme engine to enable different progress bar styles.'),
+    '#type' => 'textfield',
+  );
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
   if ($source_form = $source->widgetForm(isset($items[$delta]) ? $items[$delta] : NULL)) {
     $element['options']['source'] += $source_form;
@@ -174,12 +220,9 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     }
 
     $theme = array();
-    if ($entity instanceof Entity) {
-      $theme[] = 'pgbar__' . $entity_type . '__' . $entity->bundle();
-    } elseif ($entity_type == 'node') {
-      $theme[] = 'pgbar__' . $entity_type . '__' . $entity->type;
+    if (isset($item['options']['display']['template'])) {
+        $theme[] = 'pgbar__' . $item['options']['display']['template'];
     }
-    $theme[] = 'pgbar__' . $entity_type;
     $theme[] = 'pgbar';
     $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
     $d = array(
@@ -242,7 +285,7 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
   if ($field['type'] == 'pgbar') {
     foreach ($items as &$item) {
       $options = array();
-      foreach (array('target', 'texts', 'source') as $k) {
+      foreach (array('target', 'texts', 'source', 'display') as $k) {
         if (!isset($item['options'][$k]))
           continue;
         $options[$k] = $item['options'][$k];
