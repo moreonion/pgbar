@@ -6,16 +6,16 @@
  */
 
 function _pgbar_merge_into(&$a, $b) {
-    foreach($b as $k => $v) {
-        if(array_key_exists($k, $a))
-            if (is_array($v))
-                $a[$k] = _pgbar_merge_into($a[$k], $b[$k]);
-            else
-                ; //ignore value in $b
-                else
-                    $a[$k] = $v;
-    }
-    return $a;
+  foreach($b as $k => $v) {
+    if(array_key_exists($k, $a))
+      if (is_array($v))
+        $a[$k] = _pgbar_merge_into($a[$k], $b[$k]);
+      else
+        ; //ignore value in $b
+    else
+      $a[$k] = $v;
+  }
+  return $a;
 }
 
 /**
@@ -130,7 +130,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       '#title' => t('Display'),
     ),
     '#states' => array(
-      'invisible' => array("#edit-field-petition-pgbar-und-$delta-state" => array('checked' => FALSE)),
+        'invisible' => array("#edit-" . strtr($field['field_name'], '_', '-') . "-und-$delta-state" => array('checked' => FALSE)),
     ),
   );
   $element['options']['target']['target'] = array(
@@ -186,6 +186,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   $element['options']['display']['template'] = array(
     '#title' => t('Style'),
     '#description' => t('This field is handed over to the theme engine to enable different progress bar styles.'),
+    '#default_value' => $item['options']['display']['template'],
     '#type' => 'textfield',
   );
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
