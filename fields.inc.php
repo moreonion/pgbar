@@ -169,19 +169,19 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['status_message'],
   );
-  $element['options']['texts']['full_intro_messages'] = array(
+  $element['options']['texts']['full_intro_message'] = array(
     '#title' => t('Intro message at 100% (or above)'),
     '#description' => t('Intro message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => $item['options']['texts']['full_intro_messages'],
+    '#default_value' => $item['options']['texts']['full_intro_message'],
   );
-  $element['options']['texts']['full_status_messages'] = array(
+  $element['options']['texts']['full_status_message'] = array(
     '#title' => t('Status message at 100% (or above)'),
     '#description' => t('Status message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
-    '#default_value' => $item['options']['texts']['full_status_messages'],
+    '#default_value' => $item['options']['texts']['full_status_message'],
   );
   $element['options']['display']['template'] = array(
     '#title' => t('Style'),
