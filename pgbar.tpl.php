@@ -5,6 +5,7 @@
  */
 
 $vars['!current'] = '<strong>' . number_format($current, 0) . '</strong>';
+$vars['!current-animated'] = '<strong class="pgbar-counter">' . number_format($current, 0) . '</strong>';
 $vars['!target'] = '<strong>' . number_format($target, 0) . '</strong>';
 $vars['!needed'] = number_format($target - $current, 0);
 
