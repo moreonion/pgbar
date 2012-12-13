@@ -323,18 +323,20 @@ function pgbar_field_instance_settings_form($field, $instance) {
   $settings = &$instance['settings'];
 
   $form = array();
-  $form['source'] = array(
-    '#type' => 'select',
-    '#title' => t('Data source'),
-    '#description' => 'These plugins decide where the data for the current progress bar value come from',
-  );
 
   $sources = ctools_get_plugins('pgbar', 'source');
   $options = array();
   foreach ($sources as $id => $source) {
     $options[$id] = $source['label'];
   }
-  $form['source']['#options'] = $options;
+
+  $form['source'] = array(
+    '#type' => 'select',
+    '#title' => t('Data source'),
+    '#description' => 'These plugins decide where the data for the current progress bar value come from',
+    '#options' => $options,
+    '#default_value' => !empty($settings['source']) ? $settings['source'] : NULL,
+  );
 
   return $form;
 }
