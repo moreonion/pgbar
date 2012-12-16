@@ -38,7 +38,7 @@ function pgbar_update_7002() {
   foreach ($tables as $table => $field_name) {
     db_add_field($table, $field_name . '_options', $field);
     // serialize(array('target' => $i)) == 'a:1:{s:6:"target";i:$1;}'
-    db_query("UPDATE $table SET {$field_name}_options='a:1:{s:6:\"target\";i:'+{$field_name}_target+';}'");
+    db_query("UPDATE {{$table}} SET {$field_name}_options=CONCAT('a:1:{s:6:\"target\";i:', {$field_name}_target, ';}')");
     db_drop_field($table, $field_name . '_target');
   }
 }
