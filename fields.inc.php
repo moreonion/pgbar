@@ -134,8 +134,8 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     ),
   );
   $element['options']['target']['target'] = array(
-    '#title' => t('Target value steps (comma separated)'),
-    '#description' => t('The target value for the progress bar is automatically increased using these steps.'),
+    '#title' => t('Goal for this action'),
+    '#description' => t('This value will be used as goal in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once current goal is (nearly) reached.'),
     '#type' => 'textfield',
     '#default_value' => $item['options']['target']['target'],
     '#size' => 60,
