@@ -14,7 +14,7 @@ class PgbarSourceWebformSubmissions {
   public function getValue($item) {
     $entity = $this->entity;
     if ($entity) {
-      return db_query('SELECT COUNT(ws.nid) FROM webform_submissions ws INNER JOIN node n USING (nid) WHERE n.nid=:nid OR n.nid=:tnid OR n.tnid=:tnid', array(':nid' => $entity->nid, ':tnid' => $entity->tnid))->fetchField();
+      return db_query('SELECT COUNT(ws.nid) FROM webform_submissions ws INNER JOIN node n USING (nid) WHERE n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)', array(':nid' => $entity->nid, ':tnid' => $entity->tnid))->fetchField();
     } else {
       return 0;
     }

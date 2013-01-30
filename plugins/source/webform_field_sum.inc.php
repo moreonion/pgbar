@@ -16,7 +16,7 @@ class PgbarSourceWebformSum {
          . ' FROM webform_submitted_data wsd'
          . ' INNER JOIN webform_component wc ON wsd.nid=wc.nid AND wc.cid=wsd.cid'
          . ' INNER JOIN node n ON wc.nid=n.nid'
-         . ' WHERE wc.form_key=:fkey AND (n.nid=:nid OR n.nid=:tnid OR n.tnid=:tnid)';
+         . ' WHERE wc.form_key=:fkey AND (n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0))';
     return db_query($sql, array(':nid' => $entity->nid, ':tnid' => $entity->tnid, ':fkey' => $item['options']['source']['form_key']))->fetchField();
   }
   public function widgetForm($item) {
