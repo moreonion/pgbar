@@ -261,7 +261,7 @@ function _pgbar_select_target($targets, $current, $percentage) {
  * Implements hook_field_is_empty().
  */
 function pgbar_field_is_empty($item, $field) {
-  return empty($item['options']['target']['target']);
+  return FALSE;
 }
 
 /**
