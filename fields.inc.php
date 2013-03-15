@@ -232,6 +232,10 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
       '#texts' => $item['options']['texts'],
     );
+    // Skip pgbars that have a target of 0
+    if ($d['#target'] <= 0) {
+      continue;
+    }
     $element[] = $d;
   }
   $element['#attached'] = array(
