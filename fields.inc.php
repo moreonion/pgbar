@@ -327,7 +327,7 @@ function pgbar_field_instance_settings_form($field, $instance) {
   $settings = &$instance['settings'];
 
   $form = array();
-
+  ctools_include('plugins');
   $sources = ctools_get_plugins('pgbar', 'source');
   $options = array();
   foreach ($sources as $id => $source) {
