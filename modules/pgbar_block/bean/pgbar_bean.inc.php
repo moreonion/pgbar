@@ -25,7 +25,6 @@ class PgbarFixedBean extends BeanPlugin {
     $pgbar['state']['#access'] = FALSE;
     $pgbar['options']['target']['offset']['#title'] = t('Current count');
     $pgbar['options']['target']['offset']['#description'] = t('This value is shown as the current state of the progress bar.');
-    dpm($pgbar);
     return $form;
   }
 
