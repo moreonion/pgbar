@@ -5,6 +5,14 @@
  */
 
 /**
+ * Implements hook_install().
+ */
+function pgbar_install() {
+  _field_info_collate_types(TRUE);
+  _pgbar_create_default_field();
+}
+
+/**
  * Implements hook_field_schema().
  */
 function pgbar_field_schema($field) {
@@ -23,6 +31,13 @@ function pgbar_field_schema($field) {
   return array(
     'columns' => $columns,
   );
+}
+
+/**
+ * Create default field.
+ */
+function pgbar_update_7003() {
+  _pgbar_create_default_field();
 }
 
 /**
@@ -80,3 +95,15 @@ function _pgbar_field_tables() {
   }
   return $tables; 
 }
+
+function _pgbar_create_default_field() {
+  $field = array(
+    'module' => 'pgbar',
+    'type' => 'pgbar',
+    'field_name' => 'pgbar_default',
+    'active' => '1',
+    'global_block_settings' => '1',
+  );
+  field_create_field($field);
+}
+

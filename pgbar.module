@@ -6,7 +6,7 @@
  * - Defines the pgbar theme function.
  */
 
-require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'pgbar') . '/fields.inc.php';
+require_once dirname(__FILE__) . '/fields.inc.php';
 
 /**
  * Implements hook_theme().
