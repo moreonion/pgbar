@@ -13,11 +13,17 @@ class PgbarSourceWebformSubmissions {
   }
   public function getValue($item) {
     $entity = $this->entity;
-    if ($entity) {
-      return db_query('SELECT COUNT(ws.nid) FROM webform_submissions ws INNER JOIN node n USING (nid) WHERE n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)', array(':nid' => $entity->nid, ':tnid' => $entity->tnid))->fetchField();
+    $q = db_select('node', 'n');
+    $q->addExpression('COUNT(ws.nid)');
+    if (module_exists('variations')) {
+      $q->leftJoin('variations', 'v', "n.nid=v.entity_id AND v.entity_type='node'");
+      $q->leftJoin('variations', 'vn', "v.vid=vn.vid AND v.entity_type='node'");
+      $q->innerJoin('webform_submissions', 'ws', 'ws.nid = vn.entity_id OR (vn.entity_id IS NULL AND ws.nid=n.nid)');
     } else {
-      return 0;
+      $q->innerJoin('webform_submissions', 'ws', 'n.nid=ws.nid');
     }
+    $q->where('n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)', array(':nid' => $entity->nid, ':tnid' => $entity->tnid));
+    return $q->execute()->fetchField();
   }
   public function widgetForm($item) {
     return NULL;
