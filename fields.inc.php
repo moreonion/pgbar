@@ -61,13 +61,9 @@ function pgbar_field_formatter_info() {
 
 function _pgbar_source_plugin_load($entity, $field, $instance) {
   ctools_include('plugins');
-  if (isset($instance['settings']['source'])) {
-    $plugin = ctools_get_plugins('pgbar', 'source', $instance['settings']['source']);
-    $class = ctools_plugin_get_class($plugin, 'handler');
-  } else {
-    require_once dirname(__FILE__) . '/plugins/source/webform_submissions.inc.php';
-    $class = 'PgbarSourceWebformSubmissions';
-  }
+  $plugin_name = isset($instance['settings']['source']) ? $instance['settings']['source'] : 'webform_submissions.inc';
+  $plugin = ctools_get_plugins('pgbar', 'source', $plugin_name);
+  $class = ctools_plugin_get_class($plugin, 'handler');
   return new $class($entity, $field, $instance);
 }
 
@@ -345,8 +341,3 @@ function pgbar_field_instance_settings_form($field, $instance) {
   return $form;
 }
 
-function pgbar_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'pgbar' && $plugin == 'source') {
-    return 'plugins/source';
-  }
-}

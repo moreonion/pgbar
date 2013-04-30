@@ -39,7 +39,15 @@ function pgbar_preprocess_pgbar(&$v) {
 }
 
 /**
- * Implements ctools_plugin_type().
+ * Implements hook_ctools_plugin_directory().
+ */
+function pgbar_ctools_plugin_directory($module, $plugin) {
+  if ($module == 'pgbar' && $plugin == 'source') {
+    return 'plugins/source';
+  }
+}
+/**
+ * Implements hook_ctools_plugin_type().
  */
 function pgbar_ctools_plugin_type() {
   $types['source'] = array(
