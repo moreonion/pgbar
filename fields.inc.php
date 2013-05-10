@@ -287,6 +287,19 @@ class PgbarFieldItem {
       }
     }
   }
+
+  public function selectTarget($current) {
+    $t = 1;
+    $targets = $this->data['options']['target']['target'];
+    $percentage = $this->data['options']['target']['threshold'];
+    while (count($targets)) {
+      $t = array_shift($targets);
+      if ($current * 100 / $t <= $percentage) {
+        return $t;
+      }
+    }
+    return $t;
+  }
 }
 
 /**
@@ -325,7 +338,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $d = array(
       '#theme' => $theme,
       '#current' => $current,
-      '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
+      '#target' => $item['fieldItem']->selectTarget($current),
       '#texts' => $item['options']['texts'],
     );
     // Skip pgbars that have a target of 0
@@ -338,23 +351,6 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
   );
   return count($element) ? $element : NULL;
-}
-
-/**
- * Get the first target that is not too close (as defined by percentage).
- * @param $targets array of targets
- * @param $current current value
- * @param $percentage at which to switch to the next target value
- */
-function _pgbar_select_target($targets, $current, $percentage) {
-  $t = 1;
-  while (count($targets)) {
-    $t = array_shift($targets);
-    if ($current * 100 / $t <= $percentage) {
-      return $t;
-    }
-  }
-  return $t;
 }
 
 /**
