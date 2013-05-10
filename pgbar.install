@@ -105,5 +105,15 @@ function _pgbar_create_default_field() {
     'global_block_settings' => '1',
   );
   field_create_field($field);
+  $instance = array(
+    'label' => 'Progressbar',
+    'field_name' => 'pgbar_default',
+    'entity_type' => 'node',
+    'bundle' => 'webform',
+    'settings' => array(
+      'source' => 'webform_submissions.inc',
+    ),
+  );
+  field_create_instance($instance);
 }
 
