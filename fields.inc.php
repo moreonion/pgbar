@@ -234,10 +234,12 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     }
     $element[] = $d;
   }
-  $element['#attached'] = array(
-    'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
-  );
-  return count($element) ? $element : NULL;
+  if (!empty($element)) {
+    $element['#attached'] = array(
+      'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
+    );
+    return $element;
+  }
 }
 
 /**
