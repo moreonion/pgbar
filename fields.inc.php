@@ -5,6 +5,19 @@
  * Define the pgbar field type.
  */
 
+function _pgbar_merge_into(&$a, $b) {
+  foreach($b as $k => $v) {
+    if(array_key_exists($k, $a))
+      if (is_array($v))
+        $a[$k] = _pgbar_merge_into($a[$k], $b[$k]);
+      else
+        ; //ignore value in $b
+    else
+      $a[$k] = $v;
+  }
+  return $a;
+}
+
 /**
  * Implements hook_field_info().
  */
@@ -58,12 +71,40 @@ function _pgbar_source_plugin_load($entity, $field, $instance) {
  * Implements hook_field_widget_form().
  */
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
-  $item = PgbarFieldItem::itemForWidget($items, $instance, $delta);
+  $item = array();
+  if (isset($items[$delta])) {
+    _pgbar_merge_into($item, $items[$delta]);
+    if (isset($item['options']['target']['target']) && is_array($item['options']['target']['target'])) {
+      $item['options']['target']['target'] = implode(',', $item['options']['target']['target']);
+    }
+  }
+  if (isset($instance['default_value'][$delta]))
+    _pgbar_merge_into($item, $instance['default_value'][$delta]);
+  _pgbar_merge_into($item, array(
+    'state' => 1,
+    'options' => array(
+      'target' => array(
+        'target'    => '',
+        'threshold' => '90',
+        'offset'    => '0',
+      ),
+      'texts' => array(
+        'intro_message'       => 'We need !target signatures.',
+        'full_intro_message'  => 'Thanks for your support!',
+        'status_message'      => 'Already !current of !target signed the petition.',
+        'full_status_message' => "We've reached our goal of !target supports.",
+      ),
+      'display' => array(
+        'template' => '',
+      ),
+    ),
+  ));
 
   $element['state'] = array(
     '#title' => t('Display a progress bar'),
     '#description' => t("If enabled the progressbar is rendered on node display (according to the content-type's display settings"),
     '#type' => 'checkbox',
+    '#default_value' => $item['state'],
   );
   $element['options'] = array(
     '#type' => 'vertical_tabs',
@@ -92,6 +133,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Goal for this action'),
     '#description' => t('This value will be used as goal in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once current goal is (nearly) reached.'),
     '#type' => 'textfield',
+    '#default_value' => $item['options']['target']['target'],
     '#size' => 60,
     '#maxlength' => 60,
   );
@@ -100,17 +142,20 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#description' => t('Use the smallest step from the above setting that is not yet reached to this percentage.'),
     '#type' => 'textfield',
     '#number_type' => 'integer',
+    '#default_value' => $item['options']['target']['threshold'],
   );
   $element['options']['target']['offset'] = array(
     '#title' => t('Collected offline'),
     '#description' => t('Add a constant offset to the number shown by the progress bar.'),
     '#type' => 'textfield',
     '#nimber_type' => 'integer',
+    '#default_value' => $item['options']['target']['offset'],
   );
   $element['options']['texts']['intro_message'] = array(
     '#title' => t('Intro message'),
     '#description' => t('This is the message that is displayed above the progress bar.'),
     '#type' => 'textarea',
+    '#default_value' => $item['options']['texts']['intro_message'],
     '#rows' => 2,
   );
   $element['options']['texts']['status_message'] = array(
@@ -118,22 +163,26 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#description' => t('This is the message that\'s displayed below the progress bar, usually telling the user how much progress has been made already.'),
     '#type' => 'textarea',
     '#rows' => 2,
+    '#default_value' => $item['options']['texts']['status_message'],
   );
   $element['options']['texts']['full_intro_message'] = array(
     '#title' => t('Intro message at 100% (or above)'),
     '#description' => t('Intro message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
+    '#default_value' => $item['options']['texts']['full_intro_message'],
   );
   $element['options']['texts']['full_status_message'] = array(
     '#title' => t('Status message at 100% (or above)'),
     '#description' => t('Status message when the target is reached (or overreached).'),
     '#type' => 'textarea',
     '#rows' => 2,
+    '#default_value' => $item['options']['texts']['full_status_message'],
   );
   $element['options']['display']['template'] = array(
     '#title' => t('Style'),
     '#description' => t('This field is handed over to the theme engine to enable different progress bar styles.'),
+    '#default_value' => $item['options']['display']['template'],
     '#type' => 'textfield',
   );
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
@@ -146,171 +195,9 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   $element += array(
     '#type' => 'fieldset',
     '#title' => t('Progress bar'),
-    '#element_validate' => array('_pgbar_field_item_from_form'),
   );
-  $item->insertDefaults($element);
 
   return $element;
-}
-
-class PgbarFieldItem {
-  protected $data;
-
-  protected static $builtinDefaults = array(
-    'state' => 1,
-    'options' => array(
-      'target' => array(
-        'target'    => array(),
-        'threshold' => '90',
-        'offset'    => '0',
-      ),
-      'texts' => array(
-        'intro_message'       => 'We need !target signatures.',
-        'full_intro_message'  => 'Thanks for your support!',
-        'status_message'      => 'Already !current of !target signed the petition.',
-        'full_status_message' => "We've reached our goal of !target supports.",
-      ),
-      'display' => array(
-        'template' => '',
-      ),
-    ),
-  );
-
-  public function __construct(&$data) {
-    $this->data = &$data;
-  }
-
-  public static function fromDefaults() {
-    return new PgbarFieldItem(self::$builtinDefaults);
-  }
-  
-  public static function itemForWidget($items, $instance, $delta) {
-    if (isset($items[$delta])) {
-      $item = $items[$delta]['fieldItem'];
-    } elseif (isset($instance['default_value'][$delta])) {
-      $item = $instance['default_value'][$delta]['fieldItem'];
-    } else {
-      $item = self::fromDefaults();
-    }
-    if (isset($instance['default_value'][$delta]))
-      $item->merge($instance['default_value'][$delta]);
-    $item->mergeDefaults();
-    return $item;
-  }
-
-  public static function fromFormSubmission(&$item) {
-    if (isset($item['options']['target']['target']) && !is_array($item['options']['target']['target'])) {
-      $v = array();
-      foreach (explode(',', $item['options']['target']['target']) as $n) {
-        $n = (int) $n;
-        if ($n > 0) {
-          $v[] = $n;
-        }
-      }
-      $item['options']['target']['target'] = $v;
-    }
-    return new PgbarFieldItem($item);
-  }
-  
-  public function insertDefaults(&$element) {
-    $data = $this->data;
-    $data['options']['target']['target'] = implode(',', $data['options']['target']['target']);
-
-    $queue[] = array(&$element, &$data);
-    while ($items = array_shift($queue)) {
-      if (is_array($items[1])) {
-        foreach ($items[1] as $k => &$v) {
-          if (isset($items[0][$k]) && is_array($items[0][$k])) {
-            $queue[] = array(&$items[0][$k], &$v);
-          }
-        }
-      } else {
-        $items[0]['#default_value'] = $items[1];
-      }
-    }
-  }
-
-  public static function fromStorage(&$item) {
-    if (!is_array($item['options'])) {
-      $item['options'] = unserialize($item['options']);
-    }
-    return new PgbarFieldItem($item);
-  }
-
-  public function toStorage() {
-    $data = $this->data;
-    $options = array();
-    foreach (array('target', 'texts', 'source', 'display') as $k) {
-      if (isset($data['options'][$k])) {
-        $options[$k] = $data['options'][$k];
-      }
-    }
-    $data['options'] = serialize($options);
-    return $data;
-  }
-
-  public function merge(&$item) {
-    $queue = array(array(&$this->data, &$item));
-    while ($items = array_shift($queue)) {
-      foreach ($items[1] as $k => &$v) {
-        if (!isset($items[0][$k])) {
-          $items[0][$k] = &$v;
-        } else {
-          if (is_array($items[0][$k]) && is_array($v)) {
-            $queue[] = array(&$items[0][$k], &$v);
-          }
-        }
-      }
-    }
-  }
-
-  public function mergeDefaults() {
-    $this->merge(self::$builtinDefaults);
-  }
-
-  public static function hook_presave($field, &$items) {
-    if ($field['type'] == 'pgbar') {
-      foreach ($items as $index => &$item) {
-        $items[$index] = $item['fieldItem']->toStorage();
-      }
-    }
-  }
-  
-  public static function hook_load($field, $entities, &$items) {
-    if ($field['type'] == 'pgbar') {
-      foreach ($entities as $id => $entity) {
-        foreach ($items[$id] as &$item) {
-          if (!isset($item['fieldItem'])) {
-            $item['fieldItem'] = PgbarFieldItem::fromStorage($item);
-          }
-        }
-      }
-    }
-  }
-
-  public function selectTarget($current) {
-    $t = 1;
-    $targets = $this->data['options']['target']['target'];
-    $percentage = $this->data['options']['target']['threshold'];
-    while (count($targets)) {
-      $t = array_shift($targets);
-      if ($current * 100 / $t <= $percentage) {
-        return $t;
-      }
-    }
-    return $t;
-  }
-}
-
-/**
- * Implements form-API#element_validate.
- */
-function _pgbar_field_item_from_form($element, &$form_state, $form) {
-  $value = &$form_state['values'];
-  foreach ($element['#parents'] as $p) {
-    $value =  &$value[$p];
-  }
-  $value['fieldItem'] = PgbarFieldItem::fromFormSubmission($value);
 }
 
 /**
@@ -338,7 +225,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $d = array(
       '#theme' => $theme,
       '#current' => $current,
-      '#target' => $item['fieldItem']->selectTarget($current),
+      '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
       '#texts' => $item['options']['texts'],
     );
     // Skip pgbars that have a target of 0
@@ -354,24 +241,79 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 }
 
 /**
+ * Get the first target that is not too close (as defined by percentage).
+ * @param $targets array of targets
+ * @param $current current value
+ * @param $percentage at which to switch to the next target value
+ */
+function _pgbar_select_target($targets, $current, $percentage) {
+  $t = 1;
+  while (count($targets)) {
+    $t = array_shift($targets);
+    if ($current * 100 / $t <= $percentage) {
+      return $t;
+    }
+  }
+  return $t;
+}
+
+/**
  * Implements hook_field_is_empty().
  */
-function pgbar_field_is_empty(&$item, $field) {
+function pgbar_field_is_empty($item, $field) {
   return FALSE;
+}
+
+/**
+ * Validation callback for the pgbar field.
+ */
+function pgbar_number_validate($element, &$form_state, $form) {
+  if (!is_numeric($element['#value']) || $element['#value'] == '') {
+    form_error($element, t('The field "!name" has to be a number.', array('!name' => t($element['#title']))));
+  }
+}
+
+/**
+ * Implements hook_field_validate().
+ */
+function pgbar_field_validate($entity_type, $entity, $field, $instance, $langcode, &$items, &$errors) {
 }
 
 /**
  * Implements hook_field_presave().
  */
 function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
-  PgbarFieldItem::hook_presave($field, $items);
+  if ($field['type'] == 'pgbar') {
+    foreach ($items as &$item) {
+      $options = array();
+      foreach (array('target', 'texts', 'source', 'display') as $k) {
+        if (!isset($item['options'][$k]))
+          continue;
+        $options[$k] = $item['options'][$k];
+      }
+      if (!is_array($options['target']['target'])) {
+        $targets = array();
+        foreach (explode(',', $options['target']['target']) as $n) {
+          $targets[] = (int) $n;
+        }
+        $options['target']['target'] = $targets;
+      }
+      $item['options'] = serialize($options);
+    }
+  }
 }
 
 /**
  * Implements hook_field_load().
  */
 function pgbar_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
-  PgbarFieldItem::hook_load($field, $entities, $items);
+  if ($field['type'] == 'pgbar') {
+    foreach ($entities as $id => $entity) {
+      foreach ($items[$id] as &$item) {
+        $item['options'] = unserialize($item['options']);
+      }
+    }
+  }
 }
 
 /**
