@@ -73,18 +73,16 @@ function _pgbar_source_plugin_load($entity, $field, $instance) {
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
   $item = array();
   if (isset($items[$delta])) {
-    _pgbar_merge_into($item, $items[$delta]);
+    $item = &$items[$delta];
     if (isset($item['options']['target']['target']) && is_array($item['options']['target']['target'])) {
       $item['options']['target']['target'] = implode(',', $item['options']['target']['target']);
     }
   }
-  if (isset($instance['default_value'][$delta]))
-    _pgbar_merge_into($item, $instance['default_value'][$delta]);
   _pgbar_merge_into($item, array(
     'state' => 1,
     'options' => array(
       'target' => array(
-        'target'    => '',
+        'target'    => '200',
         'threshold' => '90',
         'offset'    => '0',
       ),
@@ -195,9 +193,40 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   $element += array(
     '#type' => 'fieldset',
     '#title' => t('Progress bar'),
+    '#element_validate' => array('pgbar_field_widget_validate'),
   );
 
   return $element;
+}
+
+/**
+ * Element validate callback for @see pgbar_field_widget_form().
+ */
+function pgbar_field_widget_validate($element, &$form_state, $form) {
+  $item = &$form_state['values'];
+  foreach ($element['#parents'] as $key) {
+    $item = &$item[$key];
+  }
+  $targets = &$item['options']['target']['target'];
+  $parts = explode(',', $targets);
+  $targets = array();
+  foreach ($parts as $p) {
+    $n = (int) $p;
+    if ($n > 0) {
+      $targets[] = $n;
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_error().
+ *
+ * Map field-type validation errors to field-widget validation errors.
+ */
+function pgbar_field_widget_error($element, $error, $form, &$form_state) {
+  if ($error['error'] == 'no_valid_target') {
+    form_error($element['options']['target']['target'], $error['message']);
+  }
 }
 
 /**
@@ -267,18 +296,17 @@ function pgbar_field_is_empty($item, $field) {
 }
 
 /**
- * Validation callback for the pgbar field.
- */
-function pgbar_number_validate($element, &$form_state, $form) {
-  if (!is_numeric($element['#value']) || $element['#value'] == '') {
-    form_error($element, t('The field "!name" has to be a number.', array('!name' => t($element['#title']))));
-  }
-}
-
-/**
  * Implements hook_field_validate().
  */
 function pgbar_field_validate($entity_type, $entity, $field, $instance, $langcode, &$items, &$errors) {
+  foreach ($items as $delta => $item) {
+    if ($item['state'] && empty($item['options']['target']['target'])) {
+      $errors[$field['field_name']][$langcode][$delta][] = array(
+        'error' => 'no_valid_target',
+        'message' => t('%name: Plese enter at least one valid progress bar target (a number > 0).', array('%name' => $instance['label'])),
+      );
+    }
+  }
 }
 
 /**
@@ -293,13 +321,6 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
           continue;
         $options[$k] = $item['options'][$k];
       }
-      if (!is_array($options['target']['target'])) {
-        $targets = array();
-        foreach (explode(',', $options['target']['target']) as $n) {
-          $targets[] = (int) $n;
-        }
-        $options['target']['target'] = $targets;
-      }
       $item['options'] = serialize($options);
     }
   }
@@ -312,7 +333,10 @@ function pgbar_field_load($entity_type, $entities, $field, $instances, $langcode
   if ($field['type'] == 'pgbar') {
     foreach ($entities as $id => $entity) {
       foreach ($items[$id] as &$item) {
-        $item['options'] = unserialize($item['options']);
+        // work around hook_field_load being called by node_preview(). #1990818
+        if (is_string($item['options'])) {
+          $item['options'] = unserialize($item['options']);
+        }
       }
     }
   }
