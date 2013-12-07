@@ -1,5 +1,8 @@
-
 <?php
+/**
+ * @file
+ * PgbarSource plugin that displays a fixed count.
+ */
 
 $plugin = array(
   'label' => t('Manual count'),
@@ -7,11 +10,15 @@ $plugin = array(
 );
 
 class PgbarSourceNull {
-  public function __construct($entity, $field, $instance) {
-  }
+  /**
+   * Value will be set by the "offset" setting.
+   */
   public function getValue($item) {
     return 0;
   }
+  /**
+   * We don't need any extra configuration.
+   */
   public function widgetForm($item) {
     return NULL;
   }

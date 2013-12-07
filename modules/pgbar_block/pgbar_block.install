@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * Install file for pgbar_block.
+ *
+ * Configure field instances on install.
+ */
 
 /**
  * Implements hook_install().
@@ -7,6 +13,9 @@ function pgbar_block_install() {
   _pgbar_block_instance_settings();
 }
 
+/**
+ * Create field instances for the pgbar bean bundles.
+ */
 function _pgbar_block_instance_settings() {
   $instance = array(
     'field_name' => 'pgbar_default',
@@ -19,8 +28,7 @@ function _pgbar_block_instance_settings() {
         'label' => 'hidden',
         'type' => 'pgbar',
         'module' => 'pgbar',
-        'settings' => array(
-        ),
+        'settings' => array(),
         'weight' => 1,
       ),
     ),

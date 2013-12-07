@@ -8,12 +8,12 @@
 .pgbar-bg {
   width: 100%;
   position: relative;
-  border: 1px solid #D1D1D1;
+  border: 1px solid #d1d1d1;
 }
 
 .pgbar-current {
-  background: none #B2D4EF;
-  height: 50px; 
+  background: none #b2d4ef;
+  height: 50px;
 }
 
 .pgbar-percent {

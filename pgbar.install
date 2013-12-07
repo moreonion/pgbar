@@ -41,7 +41,7 @@ function pgbar_update_7003() {
 }
 
 /**
- * Replace target with generic config field
+ * Replace target with generic config field.
  */
 function pgbar_update_7002() {
   $tables = _pgbar_field_tables();
@@ -52,10 +52,11 @@ function pgbar_update_7002() {
   $tables = _pgbar_field_tables();
   foreach ($tables as $table => $field_name) {
     db_add_field($table, $field_name . '_options', $field);
-    // serialize(array('target' => array('target' => array($i)))) == 'a:1:{s:6:"target";a:1:{s:6:"target";a:1:{i:0;i:$i;}}}'
+    // serialize(array('target' => array('target' => array($i))))
+    // -> 'a:1:{s:6:"target";a:1:{s:6:"target";a:1:{i:0;i:$i;}}}'
     db_update($table)
-    ->expression("{$field_name}_options", "CONCAT(:a, {$field_name}_target, :b)", array(':a' => 'a:1:{s:6:"target";a:1:{s:6:"target";a:1:{i:0;i:', ':b' => ';}}}'))
-	->execute();
+      ->expression("{$field_name}_options", "CONCAT(:a, {$field_name}_target, :b)", array(':a' => 'a:1:{s:6:"target";a:1:{s:6:"target";a:1:{i:0;i:', ':b' => ';}}}'))
+      ->execute();
     db_drop_field($table, $field_name . '_target');
   }
 }
@@ -75,6 +76,9 @@ function pgbar_update_7001() {
   }
 }
 
+/**
+ * Get a list of all tables with fields of type pgbar.
+ */
 function _pgbar_field_tables() {
   $res = db_query('SELECT field_name, data FROM field_config WHERE type=:type', array(':type' => 'pgbar'));
   $tables = array();
@@ -87,7 +91,8 @@ function _pgbar_field_tables() {
             $tables[$table] = $row->field_name;
           }
         }
-      } else {
+      }
+      else {
         $tables['field_data_' . $row->field_name] = $row->field_name;
         $tables['field_revision_' . $row->field_name] = $row->field_name;
       }
@@ -96,6 +101,9 @@ function _pgbar_field_tables() {
   return $tables; 
 }
 
+/**
+ * Create the pgbar_default field and add it to webforms.
+ */
 function _pgbar_create_default_field() {
   $field = array(
     'module' => 'pgbar',
@@ -116,4 +124,3 @@ function _pgbar_create_default_field() {
   );
   field_create_instance($instance);
 }
-

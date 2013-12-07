@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * The pgbar_block module definition.
+ *
+ * Define bundles for the blocks.
+ */
 
 /**
  * Implements hook_bean_types_api_info().
@@ -17,7 +23,7 @@ function pgbar_block_bean_types() {
     'label' => t('A progress bar block'),
     'description' => t('Display a progress bar with a manually configurable state.'),
     'handler' => array(
-      'class' => 'PgbarFixedBean',
+      'class' => 'PgbarBlockFixedBean',
       'parent' => 'bean',
     ),
     'path' => $plugin_path,

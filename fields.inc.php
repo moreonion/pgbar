@@ -1,22 +1,8 @@
 <?php
-// vim: set filetype=php expandtab tabstop=2 shiftwidth=2 autoindent smartindent:
 /**
  * @file
  * Define the pgbar field type.
  */
-
-function _pgbar_merge_into(&$a, $b) {
-  foreach($b as $k => $v) {
-    if(array_key_exists($k, $a))
-      if (is_array($v))
-        $a[$k] = _pgbar_merge_into($a[$k], $b[$k]);
-      else
-        ; //ignore value in $b
-    else
-      $a[$k] = $v;
-  }
-  return $a;
-}
 
 /**
  * Implements hook_field_info().
@@ -59,6 +45,11 @@ function pgbar_field_formatter_info() {
   return $info;
 }
 
+/**
+ * Load the source plugin for a given field instance.
+ *
+ * @return ctools plugin class instance.
+ */
 function _pgbar_source_plugin_load($entity, $field, $instance) {
   ctools_include('plugins');
   $plugin_name = isset($instance['settings']['source']) ? $instance['settings']['source'] : 'webform_submissions.inc';
@@ -78,7 +69,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       $item['options']['target']['target'] = implode(',', $item['options']['target']['target']);
     }
   }
-  _pgbar_merge_into($item, array(
+  $item = drupal_array_merge_deep(array(
     'state' => 1,
     'options' => array(
       'target' => array(
@@ -96,7 +87,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
         'template' => '',
       ),
     ),
-  ));
+  ), $item);
 
   $element['state'] = array(
     '#title' => t('Display a progress bar'),
@@ -238,7 +229,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
   $source = _pgbar_source_plugin_load($entity, $field, $instance);
 
   $element = array();
-  foreach ($items as $delta => $item) {
+  foreach ($items as $item) {
     $current = $source->getValue($item);
     // Skip disabled items.
     if (!isset($item['state']) || !$item['state']) {

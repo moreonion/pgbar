@@ -17,40 +17,41 @@ $('.pgbar-wrapper').each(function() {
     var to = current / target;
     var diff = to - from;
   }
-  
+
   counter.html('0');
-  
+
   function resetCounters(now, fx) {
     var num = '';
     // Add thousand separators to the number
     var end = 0;
     now = Math.round(now);
     while (now > 0) {
-      for (i=1; i<=end; i++) {
-	num = '0' + num;
+      for (var i = 1; i <= end; i++) {
+        num = '0' + num;
       }
       var rest = now % 1000;
       end = 3 - rest.toString().length;
       num = rest + ',' + num;
       now = (now - rest) / 1000;
     }
-    num = num.slice(0, num.length-1); // cut last thousand separator from output.
+    // cut last thousand separator from output.
+    num = num.slice(0, num.length - 1);
     counter.html(num)
   }
-  
-  var duration = 500+1000*diff;
-  
+
+  var duration = 500 + 1000 * diff;
+
   if (wrapper.attr('data-pgbar-direction') == 'vertical') {
-    bars.height(from*100 + '%');
+    bars.height(from * 100 + '%');
     var initial_animation = function() {
       wrapper.animate({val:current}, {duration: duration, step: resetCounters});
-      bars.animate({height: to*100 + '%'}, {duration: duration});
+      bars.animate({height: to * 100 + '%'}, {duration: duration});
     }
   } else {
-    bars.width(from*100 + '%');
+    bars.width(from * 100 + '%');
     var initial_animation = function() {
       wrapper.animate({val:current}, {duration: duration, step: resetCounters});
-      bars.animate({width: to*100 + '%'}, {duration: duration});
+      bars.animate({width: to * 100 + '%'}, {duration: duration});
     }
   }
 

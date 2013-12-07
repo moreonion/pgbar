@@ -9,8 +9,8 @@ $vars['!current-animated'] = '<strong class="pgbar-counter">' . number_format($c
 $vars['!target'] = '<strong>' . number_format($target, 0) . '</strong>';
 $vars['!needed'] = number_format($target - $current, 0);
 
-$intro_message  = t($goal_reached ? $texts['full_intro_message']  : $texts['intro_message'], $vars);
-$status_message = t($goal_reached ? $texts['full_status_message'] : $texts['status_message'], $vars) . "\n";
+$intro_message  = format_string($goal_reached ? $texts['full_intro_message'] : $texts['intro_message'], $vars);
+$status_message = format_string($goal_reached ? $texts['full_status_message'] : $texts['status_message'], $vars) . "\n";
 ?>
 <div class="pgbar-wrapper" data-pgbar-current="<?php print $current; ?>" data-pgbar-target="<?php print $target; ?>">
   <p><?php print $intro_message; ?></p>
