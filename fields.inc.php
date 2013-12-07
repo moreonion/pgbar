@@ -270,9 +270,9 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
  *
  * @param array $targets
  *   Integer array of targets
- * @param integer $current
+ * @param int $current
  *   Current value of the progress bar (as given by the source plugin).
- * @param integer $percentage
+ * @param int $percentage
  *   Percentage at which to switch to the next higher target value.
  */
 function _pgbar_select_target($targets, $current, $percentage) {

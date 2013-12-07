@@ -23,9 +23,9 @@ class PgbarSourceWebformSum {
    * Get the value for the given item.
    *
    * @return int
-   *  Sum of all values for the webform_component with
-   *  form_key == $item['options']['source']['form_key'] in all
-   *  webform submissions in $this-entity and all it's translations.
+   *   Sum of all values for the webform_component with
+   *   form_key == $item['options']['source']['form_key'] in all
+   *   webform submissions in $this-entity and all it's translations.
    */
   public function getValue($item) {
     $entity = $this->entity;
