@@ -12,7 +12,7 @@ class PgbarBlockFixedBean extends BeanPlugin {
     $form = array();
     field_attach_form('bean', $bean, $form, $form_state, entity_language('bean', $bean));
     $pgbar = &$form['pgbar_default'][LANGUAGE_NONE][0];
-    // showing the "Display a progress bar check-box doesn't make sense here"
+    // Showing the "Display a progress bar check-box doesn't make sense here".
     $pgbar['state']['#access'] = FALSE;
     $pgbar['options']['target']['offset']['#title'] = t('Current count');
     $pgbar['options']['target']['offset']['#description'] = t('This value is shown as the current state of the progress bar.');

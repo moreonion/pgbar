@@ -1,4 +1,10 @@
 <?php
+/**
+ * @file
+ * Implement the webform_field_sum source plugin.
+ *
+ * Sums up all values submitted for a certain webform component.
+ */
 
 $plugin = array(
   'label' => t('Webform - Sum of a field'),
@@ -16,9 +22,10 @@ class PgbarSourceWebformSum {
   /**
    * Get the value for the given item.
    *
-   * @return the sum of all values for the webform_component with
-   *   form_key == $item['options']['source']['form_key'] in all
-   *   webform submissions in $this-entity and all it's translations.
+   * @return
+   *  Sum of all values for the webform_component with
+   *  form_key == $item['options']['source']['form_key'] in all
+   *  webform submissions in $this-entity and all it's translations.
    */
   public function getValue($item) {
     $entity = $this->entity;
@@ -38,7 +45,7 @@ class PgbarSourceWebformSum {
          array(
           ':nid' => $entity->nid,
           ':tnid' => $entity->tnid,
-          ':fkey' => $item['options']['source']['form_key']
+          ':fkey' => $item['options']['source']['form_key'],
          )
       );
     return $q->execute()->fetchField();

@@ -21,8 +21,9 @@ class PgbarSourceWebformSubmissions {
   /**
    * Get the value for the given item.
    *
-   * @return the number of webform submissions in $this-entity
-   *   and all it's translations.
+   * @return
+   *  The number of webform submissions in $this-entity
+   *  and all it's translations.
    */
   public function getValue($item) {
     $entity = $this->entity;

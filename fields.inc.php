@@ -48,7 +48,8 @@ function pgbar_field_formatter_info() {
 /**
  * Load the source plugin for a given field instance.
  *
- * @return ctools plugin class instance.
+ * @return
+ *  ctools plugin class instance.
  */
 function _pgbar_source_plugin_load($entity, $field, $instance) {
   ctools_include('plugins');
@@ -95,6 +96,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#type' => 'checkbox',
     '#default_value' => $item['state'],
   );
+  $state_id = "#edit-" . strtr($field['field_name'], '_', '-') . "-und-$delta-state";
   $element['options'] = array(
     '#type' => 'vertical_tabs',
     '#title' => t('Progress bar'),
@@ -115,7 +117,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       '#title' => t('Display'),
     ),
     '#states' => array(
-        'invisible' => array("#edit-" . strtr($field['field_name'], '_', '-') . "-und-$delta-state" => array('checked' => FALSE)),
+      'invisible' => array($state_id => array('checked' => FALSE)),
     ),
   );
   $element['options']['target']['target'] = array(
@@ -149,7 +151,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   );
   $element['options']['texts']['status_message'] = array(
     '#title' => t('Status message'),
-    '#description' => t('This is the message that\'s displayed below the progress bar, usually telling the user how much progress has been made already.'),
+    '#description' => t("This is the message that's displayed below the progress bar, usually telling the user how much progress has been made already."),
     '#type' => 'textarea',
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['status_message'],
@@ -177,7 +179,8 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
   if ($source_form = $source->widgetForm(isset($items[$delta]) ? $items[$delta] : NULL)) {
     $element['options']['source'] += $source_form;
-  } else {
+  }
+  else {
     $element['options']['source']['#access'] = FALSE;
   }
 
@@ -238,7 +241,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 
     $theme = array();
     if (isset($item['options']['display']['template'])) {
-        $theme[] = 'pgbar__' . $item['options']['display']['template'];
+      $theme[] = 'pgbar__' . $item['options']['display']['template'];
     }
     $theme[] = 'pgbar';
     $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
@@ -264,9 +267,10 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 
 /**
  * Get the first target that is not too close (as defined by percentage).
- * @param $targets array of targets
- * @param $current current value
- * @param $percentage at which to switch to the next target value
+ *
+ * @param array of targets
+ * @param integer current value
+ * @param integer at which to switch to the next target value
  */
 function _pgbar_select_target($targets, $current, $percentage) {
   $t = 1;
@@ -308,9 +312,9 @@ function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode
     foreach ($items as &$item) {
       $options = array();
       foreach (array('target', 'texts', 'source', 'display') as $k) {
-        if (!isset($item['options'][$k]))
-          continue;
-        $options[$k] = $item['options'][$k];
+        if (isset($item['options'][$k])) {
+          $options[$k] = $item['options'][$k];
+        }
       }
       $item['options'] = serialize($options);
     }
@@ -324,7 +328,7 @@ function pgbar_field_load($entity_type, $entities, $field, $instances, $langcode
   if ($field['type'] == 'pgbar') {
     foreach ($entities as $id => $entity) {
       foreach ($items[$id] as &$item) {
-        // work around hook_field_load being called by node_preview(). #1990818
+        // Work around hook_field_load being called by node_preview(). #1990818
         if (is_string($item['options'])) {
           $item['options'] = unserialize($item['options']);
         }
@@ -357,4 +361,3 @@ function pgbar_field_instance_settings_form($field, $instance) {
 
   return $form;
 }
-

@@ -98,7 +98,7 @@ function _pgbar_field_tables() {
       }
     }
   }
-  return $tables; 
+  return $tables;
 }
 
 /**
