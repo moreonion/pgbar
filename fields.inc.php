@@ -48,8 +48,8 @@ function pgbar_field_formatter_info() {
 /**
  * Load the source plugin for a given field instance.
  *
- * @return
- *  ctools plugin class instance.
+ * @return object
+ *   ctools plugin class instance.
  */
 function _pgbar_source_plugin_load($entity, $field, $instance) {
   ctools_include('plugins');
@@ -268,9 +268,12 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
 /**
  * Get the first target that is not too close (as defined by percentage).
  *
- * @param array of targets
- * @param integer current value
- * @param integer at which to switch to the next target value
+ * @param array $targets
+ *   Integer array of targets
+ * @param integer $current
+ *   Current value of the progress bar (as given by the source plugin).
+ * @param integer $percentage
+ *   Percentage at which to switch to the next higher target value.
  */
 function _pgbar_select_target($targets, $current, $percentage) {
   $t = 1;

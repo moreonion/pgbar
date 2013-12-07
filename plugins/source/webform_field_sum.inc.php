@@ -22,7 +22,7 @@ class PgbarSourceWebformSum {
   /**
    * Get the value for the given item.
    *
-   * @return
+   * @return int
    *  Sum of all values for the webform_component with
    *  form_key == $item['options']['source']['form_key'] in all
    *  webform submissions in $this-entity and all it's translations.
@@ -42,11 +42,11 @@ class PgbarSourceWebformSum {
     $q->innerJoin('webform_submitted_data', 'wsd', 'wsd.nid=wc.nid AND wc.cid=wsd.cid')
       ->where(
         '(n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)) AND wc.form_key=:fkey',
-         array(
+        array(
           ':nid' => $entity->nid,
           ':tnid' => $entity->tnid,
           ':fkey' => $item['options']['source']['form_key'],
-         )
+        )
       );
     return $q->execute()->fetchField();
   }
