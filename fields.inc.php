@@ -313,6 +313,10 @@ function pgbar_field_validate($entity_type, $entity, $field, $instance, $langcod
 function pgbar_field_presave($entity_type, $entity, $field, $instance, $langcode, &$items) {
   if ($field['type'] == 'pgbar') {
     foreach ($items as &$item) {
+      // This function might be called multiple times on the same entity.
+      if (!is_array($item['options'])) {
+        continue;
+      }
       $options = array();
       foreach (array('target', 'texts', 'source', 'display') as $k) {
         if (isset($item['options'][$k])) {
