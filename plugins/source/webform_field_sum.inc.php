@@ -35,7 +35,7 @@ FROM {node} n
   INNER JOIN {webform_component} wc ON n.nid=wc.nid
   INNER JOIN {webform_submitted_data} wsd ON wsd.nid=wc.nid AND wc.cid=wsd.cid
 WHERE
-  (n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)) AND w.form_key=:fkey
+  (n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)) AND wc.form_key=:fkey
 EOSQL;
     $args = array(
       ':nid' => $entity->nid,
