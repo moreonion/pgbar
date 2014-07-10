@@ -31,7 +31,7 @@ function pgbar_theme() {
 function pgbar_preprocess_pgbar(&$v) {
   $v['goal_reached'] = $v['current'] >= $v['target'];
 
-  if ($v['style']) {
+  if (isset($v['style'])) {
     $v['theme_hook_suggestions'][] = 'pgbar__' . $v['style'];
   }
 
