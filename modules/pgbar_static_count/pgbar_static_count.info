@@ -1,0 +1,10 @@
+name = PGBar webform submission static count
+description = PGBar that counts all webform submissions for a node, remembering also deleted submissions
+core = 7.x
+
+dependencies[] = ctools
+dependencies[] = pgbar
+dependencies[] = webform
+
+
+files[] = plugin/webform_submissions_static.inc.php
