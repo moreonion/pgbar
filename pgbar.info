@@ -1,9 +1,12 @@
 name = Progress bar
 description = Enables you to build a progress bar based on webform submissions, number fields, …
 core = 7.x
+php = 5.5
 
 dependencies[] = ctools
+dependencies[] = entity
 dependencies[] = jquery_update
+dependencies[] = psr0
 dependencies[] = webform
 
 stylesheets[screen][] = pgbar.css

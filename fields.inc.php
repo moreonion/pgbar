@@ -227,12 +227,13 @@ function pgbar_field_widget_error($element, $error, $form, &$form_state) {
  * Implements hook_field_formatter_view().
  */
 function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  module_load_include('inc', 'webform', 'includes/webform.submissions');
-
+  $entity_id = entity_id($entity_type, $entity);
   $source = _pgbar_source_plugin_load($entity, $field, $instance);
 
-  $element = array();
-  foreach ($items as $item) {
+  $settings = [];
+  $element = [];
+  foreach ($items as $delta => $item) {
+    $html_id = drupal_html_id("pgbar-item");
     $current = $source->getValue($item);
     // Skip disabled items.
     if (!isset($item['state']) || !$item['state']) {
@@ -244,23 +245,34 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       $theme[] = 'pgbar__' . $item['options']['display']['template'];
     }
     $theme[] = 'pgbar';
-    $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
+    $offset = isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
+    $target = _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']);
     $d = array(
       '#theme' => $theme,
-      '#current' => $current,
-      '#target' => _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']),
+      '#current' => $current + $offset,
+      '#target' => $target,
       '#texts' => $item['options']['texts'],
+      '#html_id' => $html_id,
     );
     // Skip pgbars that have a target of 0
     if ($d['#target'] <= 0) {
       continue;
     }
+    $settings['pgbar'][$html_id] = [
+      'current' => $current,
+      'target' => $target,
+      'entity_type' => $entity_type,
+      'entity_id' => $entity_id,
+      'field_name' => $field['field_name'],
+      'delta' => $delta,
+    ];
     $element[] = $d;
   }
   if (!empty($element)) {
-    $element['#attached'] = array(
-      'js' => array(drupal_get_path('module', 'pgbar') . '/pgbar.js'),
-    );
+    $element['#attached']['js'] = [
+      drupal_get_path('module', 'pgbar') . '/pgbar.js',
+      ['type' => 'setting', 'data' => $settings],
+    ];
     return $element;
   }
 }

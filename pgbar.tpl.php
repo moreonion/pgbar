@@ -12,7 +12,7 @@ $vars['!needed'] = number_format($target - $current, 0);
 $intro_message  = format_string($goal_reached ? $texts['full_intro_message'] : $texts['intro_message'], $vars);
 $status_message = format_string($goal_reached ? $texts['full_status_message'] : $texts['status_message'], $vars) . "\n";
 ?>
-<div class="pgbar-wrapper" data-pgbar-current="<?php print $current; ?>" data-pgbar-target="<?php print $target; ?>">
+<div id="<?php print $html_id; ?>" class="pgbar-wrapper" data-pgbar-current="<?php print $current; ?>" data-pgbar-target="<?php print $target; ?>">
   <p><?php print $intro_message; ?></p>
   <div class="pgbar-bg"><div class="pgbar-current" style="width:<?php echo $percentage; ?>%"></div></div>
   <div class="pgbar-percent"><?php print number_format($percentage, 2) . '%'; ?></div>

@@ -17,6 +17,7 @@ function pgbar_theme() {
     'target' => 0,
     'style' => NULL,
     'texts' => array(),
+    'html_id' => '',
   );
   $hooks['pgbar'] = array(
     'variables' => $vars,
@@ -55,4 +56,12 @@ function pgbar_ctools_plugin_type() {
     'extension' => 'inc.php',
   );
   return $types;
+}
+
+/**
+ * Implements hook_polling_plugin_info().
+ */
+function pgbar_polling_field_type_plugin_info() {
+  $plugins['pgbar'] = '\\Drupal\\pgbar\\PgbarPolling';
+  return $plugins;
 }
