@@ -33,9 +33,8 @@ class PgbarItem
       to_abs = parseInt(data.pgbar[@settings.field_name][@settings.delta])
       @animate(to_abs) if to_abs != @current
       return
-    registry.registerEntity(
-      @settings.entity_type,
-      @settings.entity_id,
+    registry.registerUrl(
+      @settings.pollingURL,
       @settings.id,
       callback
     )

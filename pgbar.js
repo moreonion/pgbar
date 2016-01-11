@@ -45,7 +45,7 @@ PgbarItem = (function() {
         }
       };
     })(this);
-    return registry.registerEntity(this.settings.entity_type, this.settings.entity_id, this.settings.id, callback);
+    return registry.registerUrl(this.settings.pollingURL, this.settings.id, callback);
   };
 
   PgbarItem.prototype.animate = function(to_abs, from_abs) {

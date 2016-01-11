@@ -4,6 +4,8 @@
  * Define the pgbar field type.
  */
 
+use \Drupal\polling\UrlGenerator;
+
 /**
  * Implements hook_field_info().
  */
@@ -261,8 +263,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $settings['pgbar'][$html_id] = [
       'current' => $current,
       'target' => $target,
-      'entity_type' => $entity_type,
-      'entity_id' => $entity_id,
+      'pollingURL' => UrlGenerator::instance()->entityUrl($entity_type, $entity_id),
       'field_name' => $field['field_name'],
       'delta' => $delta,
     ];
