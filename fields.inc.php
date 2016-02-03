@@ -247,11 +247,11 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       $theme[] = 'pgbar__' . $item['options']['display']['template'];
     }
     $theme[] = 'pgbar';
-    $offset = isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
+    $current += isset($item['options']['target']['offset']) ? $item['options']['target']['offset'] : 0;
     $target = _pgbar_select_target($item['options']['target']['target'], $current, $item['options']['target']['threshold']);
     $d = array(
       '#theme' => $theme,
-      '#current' => $current + $offset,
+      '#current' => $current,
       '#target' => $target,
       '#texts' => $item['options']['texts'],
       '#html_id' => $html_id,
