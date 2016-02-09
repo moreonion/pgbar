@@ -81,7 +81,7 @@ PgbarItem.fromElement = ($element) ->
 
 Drupal.behaviors.pgbar = {}
 Drupal.behaviors.pgbar.attach = (context, settings) ->
-  $('.pgbar-wrapper', context).each(->
+  $('.pgbar-wrapper[id]', context).each(->
     item = PgbarItem.fromElement($(this))
     item.animateInitially()
     item.poll()
