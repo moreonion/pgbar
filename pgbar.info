@@ -6,6 +6,7 @@ php = 5.5
 dependencies[] = ctools
 dependencies[] = entity
 dependencies[] = jquery_update
+dependencies[] = polling
 dependencies[] = psr0
 dependencies[] = webform
 
