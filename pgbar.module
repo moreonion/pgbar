@@ -40,28 +40,21 @@ function pgbar_preprocess_pgbar(&$v) {
 }
 
 /**
- * Implements hook_ctools_plugin_directory().
- */
-function pgbar_ctools_plugin_directory($module, $plugin) {
-  if ($module == 'pgbar' && $plugin == 'source') {
-    return 'plugins/source';
-  }
-}
-/**
- * Implements hook_ctools_plugin_type().
- */
-function pgbar_ctools_plugin_type() {
-  $types['source'] = array(
-    'cache' => TRUE,
-    'extension' => 'inc.php',
-  );
-  return $types;
-}
-
-/**
  * Implements hook_polling_plugin_info().
  */
 function pgbar_polling_field_type_plugin_info() {
   $plugins['pgbar'] = '\\Drupal\\pgbar\\PgbarPolling';
   return $plugins;
+}
+
+/**
+ * Implements hook_pgbar_source_plugin_info().
+ */
+function pgbar_pgbar_source_plugin_info() {
+  $p['null'] = '\\Drupal\\pgbar\\Source\\StaticCount';
+  if (module_exists('webform')) {
+    $p['webform_submission_count'] = '\\Drupal\\pgbar\\Source\\WebformSubmissionCount';
+    $p['webform_component_sum'] = '\\Drupal\\pgbar\\Source\\WebformComponentSum';
+  }
+  return $p;
 }

@@ -1,22 +1,28 @@
 <?php
+
+namespace Drupal\pgbar\Source;
+
 /**
  * @file
  * Define the webform submission source plugin.
  */
 
-$plugin = array(
-  'label' => t('Webform Submissions'),
-  'handler' => array('class' => 'PgbarSourceWebformSubmissions'),
-);
+class WebformSubmissionCount implements PluginInterface {
+  protected $entity;
 
-class PgbarSourceWebformSubmissions {
+  public static function label() {
+    return t('Webform submission count');
+  }
+
+  public static function forField($entity, $field, $instance) {
+    return new static($entity);
+  }
+
   /**
    * Constructor: save entity, field and field_instance.
    */
-  public function __construct($entity, $field, $instance) {
+  public function __construct($entity) {
     $this->entity = $entity;
-    $this->field = $field;
-    $this->instance = $instance;
   }
   /**
    * Get the value for the given item.

@@ -34,6 +34,31 @@ function pgbar_field_schema($field) {
 }
 
 /**
+ * Migrate plugin names.
+ */
+function pgbar_update_7200() {
+  $map = [
+    'null.inc' => 'null',
+    'webform_field_sum.inc' => 'webform_component_sum',
+    'webform_submissions.inc' => 'webform_submission_count',
+  ];
+
+  // Loop over all field instances of pgbar-type fields.
+  $additional['field_include_inactive'] = TRUE;
+  $additional['field_include_deleted'] = TRUE;
+  foreach (field_read_fields(['type' => 'pgbar'], $additional) as $field) {
+    foreach (field_read_instances(['field_id' => $field['id']], $additional) as $instance) {
+      // Rename the source plugin if needed.
+      $source = $instance['settings']['source'];
+      if (isset($map[$source])) {
+        $instance['settings']['source'] = $map[$source];
+        field_update_instance($instance);
+      }
+    }
+  }
+}
+
+/**
  * Create default field.
  */
 function pgbar_update_7003() {
@@ -119,7 +144,7 @@ function _pgbar_create_default_field() {
     'entity_type' => 'node',
     'bundle' => 'webform',
     'settings' => array(
-      'source' => 'webform_submissions.inc',
+      'source' => 'webform_submission_count',
     ),
   );
   field_create_instance($instance);

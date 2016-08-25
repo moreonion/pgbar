@@ -51,14 +51,16 @@ function pgbar_field_formatter_info() {
  * Load the source plugin for a given field instance.
  *
  * @return object
- *   ctools plugin class instance.
+ *   A plugin implementing \Drupal\pgbar\Source\PluginInterface.
  */
 function _pgbar_source_plugin_load($entity, $field, $instance) {
-  ctools_include('plugins');
-  $plugin_name = isset($instance['settings']['source']) ? $instance['settings']['source'] : 'webform_submissions.inc';
-  $plugin = ctools_get_plugins('pgbar', 'source', $plugin_name);
-  $class = ctools_plugin_get_class($plugin, 'handler');
-  return new $class($entity, $field, $instance);
+  $name = isset($instance['settings']['source']) ? $instance['settings']['source'] : NULL;
+  $plugin_info = module_invoke_all('pgbar_source_plugin_info');
+  if (!isset($plugin_info[$name])) {
+    return;
+  }
+  $class = $plugin_info[$name];
+  return $class::forField($entity, $field, $instance);
 }
 
 /**
@@ -364,11 +366,10 @@ function pgbar_field_instance_settings_form($field, $instance) {
   $settings = &$instance['settings'];
 
   $form = array();
-  ctools_include('plugins');
-  $sources = ctools_get_plugins('pgbar', 'source');
-  $options = array();
-  foreach ($sources as $id => $source) {
-    $options[$id] = $source['label'];
+  $plugin_info = module_invoke_all('pgbar_source_plugin_info');
+  $options = [];
+  foreach ($plugin_info as $name => $class) {
+    $options[$name] = $class::label();
   }
 
   $form['source'] = array(

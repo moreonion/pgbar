@@ -1,4 +1,7 @@
 <?php
+
+namespace Drupal\pgbar\Source;
+
 /**
  * @file
  * Implement the webform_field_sum source plugin.
@@ -6,12 +9,18 @@
  * Sums up all values submitted for a certain webform component.
  */
 
-$plugin = array(
-  'label' => t('Webform - Sum of a field'),
-  'handler' => array('class' => 'PgbarSourceWebformSum'),
-);
+class WebformComponentSum implements PluginInterface {
+  protected $entity;
+  protected $instance;
 
-class PgbarSourceWebformSum {
+  public static function label() {
+    return t('Webform - Sum of a field');
+  }
+
+  public static function forField($entity, $field, $instance) {
+    return new static($entity, $instance);
+  }
+
   /**
    * Constructor: Save entity and field instance.
    */
