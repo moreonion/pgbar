@@ -181,7 +181,8 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#type' => 'textfield',
   );
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
-  if ($source_form = $source->widgetForm(isset($items[$delta]) ? $items[$delta] : NULL)) {
+  $item = isset($items[$delta]) ? $items[$delta] : NULL;
+  if ($source && ($source_form = $source->widgetForm($item))) {
     $element['options']['source'] += $source_form;
   }
   else {

@@ -38,6 +38,7 @@ function pgbar_field_schema($field) {
  */
 function pgbar_update_7200() {
   $map = [
+    NULL => 'webform_submission_count',
     'null.inc' => 'null',
     'webform_field_sum.inc' => 'webform_component_sum',
     'webform_submissions.inc' => 'webform_submission_count',
