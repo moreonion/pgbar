@@ -57,6 +57,7 @@ function _pgbar_source_plugin_load($entity, $field, $instance) {
   $name = isset($instance['settings']['source']) ? $instance['settings']['source'] : NULL;
   $plugin_info = module_invoke_all('pgbar_source_plugin_info');
   if (!isset($plugin_info[$name])) {
+    watchdog('pgbar', 'Failed to load unknown plugin %name.', ['%name' => $name], WATCHDOG_ERROR);
     return;
   }
   $class = $plugin_info[$name];
@@ -234,6 +235,10 @@ function pgbar_field_widget_error($element, $error, $form, &$form_state) {
 function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $entity_id = entity_id($entity_type, $entity);
   $source = _pgbar_source_plugin_load($entity, $field, $instance);
+
+  if (!$source) {
+    return;
+  }
 
   $settings = [];
   $element = [];
