@@ -65,7 +65,7 @@ EOSQL;
     $form['form_key'] = array(
       '#type' => 'textfield',
       '#title' => t('Form key'),
-      '#desription' => t('All values with this form key are summed up to get the current value for the progress bar.'),
+      '#description' => t('All values with this form key are summed up to get the current value for the progress bar.'),
       '#default_value' => $source_options['form_key'],
     );
     return $form;
