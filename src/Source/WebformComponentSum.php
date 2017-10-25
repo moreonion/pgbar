@@ -13,6 +13,11 @@ class WebformComponentSum implements PluginInterface {
   protected $entity;
   protected $instance;
 
+  /**
+   * @var Drupal\pgbar\Source\AddNids
+   */
+  protected $addNids;
+
   public static function label() {
     return t('Webform - Sum of a field');
   }
@@ -27,7 +32,9 @@ class WebformComponentSum implements PluginInterface {
   public function __construct($entity, $instance) {
     $this->entity = $entity;
     $this->instance = $instance;
+    $this->addNids = new AddNids($entity ? $entity->nid : NULL);
   }
+
   /**
    * Get the value for the given item.
    *
@@ -37,29 +44,23 @@ class WebformComponentSum implements PluginInterface {
    *   webform submissions in $this-entity and all it's translations.
    */
   public function getValue($item) {
-    $entity = $this->entity;
-    $sql = <<<EOSQL
-SELECT SUM(wsd.data)
-FROM {node} n
-  INNER JOIN {webform_component} wc ON n.nid=wc.nid
-  INNER JOIN {webform_submitted_data} wsd ON wsd.nid=wc.nid AND wc.cid=wsd.cid
-WHERE
-  (n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)) AND wc.form_key=:fkey
-EOSQL;
-    $args = array(
-      ':nid' => $entity->nid,
-      ':tnid' => $entity->tnid,
-      ':fkey' => $item['options']['source']['form_key'],
-    );
-    return db_query($sql, $args)->fetchField();
+    $form_key = $item['options']['source']['form_key'];
+    $q = db_select('webform_submitted_data', 'wsd');
+    $q->addExpression('SUM(wsd.data)');
+    $q->innerJoin('webform_component', 'wc', 'wsd.nid=wc.nid AND wc.cid=wsd.cid');
+    $q->condition('wc.form_key', $form_key);
+    $q->condition('wc.nid', $this->addNids->translationsQuery($item), 'IN');
+    return $q->execute()->fetchField();
   }
+
   /**
    * Build the configuration form for the field widget.
    *
-   * Add a field to configure the form_key.
-   * @todo make this a select box instead.
+   * - Add a field to configure the form_key.
+   *   @todo make this a select box instead.
+   * - Add a field to include submissions from other nodes.
    */
-  public function widgetForm($item) {
+  public function widgetForm($form, $item) {
     $source_options = isset($item['options']['source']) ? $item['options']['source'] : array();
     $source_options += array('form_key' => '');
     $form['form_key'] = array(
@@ -68,6 +69,8 @@ EOSQL;
       '#description' => t('All values with this form key are summed up to get the current value for the progress bar.'),
       '#default_value' => $source_options['form_key'],
     );
+    $form = $this->addNids->widgetForm($item, $form);
     return $form;
   }
+
 }
