@@ -144,7 +144,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#title' => t('Collected offline'),
     '#description' => t('Add a constant offset to the number shown by the progress bar.'),
     '#type' => 'textfield',
-    '#nimber_type' => 'integer',
+    '#number_type' => 'integer',
     '#default_value' => $item['options']['target']['offset'],
   );
   $element['options']['texts']['intro_message'] = array(
@@ -322,7 +322,7 @@ function pgbar_field_validate($entity_type, $entity, $field, $instance, $langcod
     if ($item['state'] && empty($item['options']['target']['target'])) {
       $errors[$field['field_name']][$langcode][$delta][] = array(
         'error' => 'no_valid_target',
-        'message' => t('%name: Plese enter at least one valid progress bar target (a number > 0).', array('%name' => $instance['label'])),
+        'message' => t('%name: Please enter at least one valid progress bar target (a number > 0).', array('%name' => $instance['label'])),
       );
     }
   }
