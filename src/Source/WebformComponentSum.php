@@ -60,7 +60,7 @@ class WebformComponentSum implements PluginInterface {
    *   @todo make this a select box instead.
    * - Add a field to include submissions from other nodes.
    */
-  public function widgetForm($form, $item) {
+  public function widgetForm($item) {
     $source_options = isset($item['options']['source']) ? $item['options']['source'] : array();
     $source_options += array('form_key' => '');
     $form['form_key'] = array(

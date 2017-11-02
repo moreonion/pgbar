@@ -65,6 +65,38 @@ function _pgbar_source_plugin_load($entity, $field, $instance) {
 }
 
 /**
+ * Helper function to add default settings to a field item.
+ *
+ * @param array $item
+ *   A field item.
+ *
+ * @return array
+ *   The field item with all default values added.
+ */
+function _pgbar_add_item_defaults(array $item) {
+  return drupal_array_merge_deep([
+    'state' => 1,
+    'options' => [
+      'target' => [
+        'target'    => '200',
+        'threshold' => '90',
+        'offset'    => '0',
+      ],
+      'texts' => [
+        'intro_message'       => 'We need !target signatures.',
+        'full_intro_message'  => 'Thanks for your support!',
+        'status_message'      => 'Already !current of !target signed the petition.',
+        'full_status_message' => "We've reached our goal of !target supports.",
+      ],
+      'display' => [
+        'template' => '',
+      ],
+      'source' => [],
+    ],
+  ], $item);
+}
+
+/**
  * Implements hook_field_widget_form().
  */
 function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langcode, $items, $delta, $element) {
@@ -75,26 +107,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
       $item['options']['target']['target'] = implode(',', $item['options']['target']['target']);
     }
   }
-  $item = drupal_array_merge_deep(array(
-    'state' => 1,
-    'options' => array(
-      'target' => array(
-        'target'    => '200',
-        'threshold' => '90',
-        'offset'    => '0',
-      ),
-      'texts' => array(
-        'intro_message'       => 'We need !target signatures.',
-        'full_intro_message'  => 'Thanks for your support!',
-        'status_message'      => 'Already !current of !target signed the petition.',
-        'full_status_message' => "We've reached our goal of !target supports.",
-      ),
-      'display' => array(
-        'template' => '',
-      ),
-      'source' => [],
-    ),
-  ), $item);
+  $item = _pgbar_add_item_defaults($item);
 
   $element['state'] = array(
     '#title' => t('Display a progress bar'),
@@ -244,6 +257,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
   $settings = [];
   $element = [];
   foreach ($items as $delta => $item) {
+    $item = _pgbar_add_item_defaults($item);
     $html_id = drupal_html_id("pgbar-item");
     $current = $source->getValue($item);
     // Skip disabled items.
