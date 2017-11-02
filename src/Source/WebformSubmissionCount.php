@@ -10,6 +10,11 @@ namespace Drupal\pgbar\Source;
 class WebformSubmissionCount implements PluginInterface {
   protected $entity;
 
+  /**
+   * @var Drupal\pgbar\Source\AddNids
+   */
+  protected $addNids;
+
   public static function label() {
     return t('Webform submission count');
   }
@@ -23,29 +28,29 @@ class WebformSubmissionCount implements PluginInterface {
    */
   public function __construct($entity) {
     $this->entity = $entity;
+    $this->addNids = new AddNids($entity ? $entity->nid : NULL);
   }
+
   /**
    * Get the value for the given item.
    *
    * @return int
-   *   The number of webform submissions in $this-entity
-   *   and all it's translations.
+   *   The number of webform submissions in $this-entity,
+   *   and on additional nodes provided via the field widget,
+   *   and all their translations.
    */
   public function getValue($item) {
-    $entity = $this->entity;
-    $q = db_select('node', 'n');
+    $q = db_select('webform_submissions', 'ws');
     $q->addExpression('COUNT(ws.nid)');
-    $q->innerJoin('webform_submissions', 'ws', 'n.nid=ws.nid');
-    $q->where(
-      'n.nid=:nid OR ((n.nid=:tnid OR n.tnid=:tnid) AND :tnid>0)',
-      array(':nid' => $entity->nid, ':tnid' => $entity->tnid)
-    );
+    $q->condition('ws.nid', $this->addNids->translationsQuery($item), 'IN');
     return $q->execute()->fetchField();
   }
+
   /**
-   * No extra configuration for the widget needed.
+   * Build the configuration form for the field widget.
    */
   public function widgetForm($item) {
-    return NULL;
+    return $this->addNids->widgetForm($item);
   }
+
 }
