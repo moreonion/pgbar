@@ -44,12 +44,13 @@ class WebformComponentSum implements PluginInterface {
    *   webform submissions in $this-entity and all it's translations.
    */
   public function getValue($item) {
+    $nids = $this->addNids->translationsQuery($item)->execute()->fetchCol();
     $form_key = $item['options']['source']['form_key'];
     $q = db_select('webform_submitted_data', 'wsd');
     $q->addExpression('SUM(wsd.data)');
     $q->innerJoin('webform_component', 'wc', 'wsd.nid=wc.nid AND wc.cid=wsd.cid');
     $q->condition('wc.form_key', $form_key);
-    $q->condition('wc.nid', $this->addNids->translationsQuery($item), 'IN');
+    $q->condition('wc.nid', $nids, 'IN');
     return $q->execute()->fetchField();
   }
 

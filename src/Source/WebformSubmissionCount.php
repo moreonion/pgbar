@@ -40,9 +40,10 @@ class WebformSubmissionCount implements PluginInterface {
    *   and all their translations.
    */
   public function getValue($item) {
+    $nids = $this->addNids->translationsQuery($item)->execute()->fetchCol();
     $q = db_select('webform_submissions', 'ws');
     $q->addExpression('COUNT(ws.nid)');
-    $q->condition('ws.nid', $this->addNids->translationsQuery($item), 'IN');
+    $q->condition('ws.nid', $nids, 'IN');
     return $q->execute()->fetchField();
   }
 
