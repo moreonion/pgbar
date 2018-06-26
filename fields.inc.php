@@ -178,14 +178,14 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   );
   $element['options']['texts']['full_intro_message'] = array(
     '#title' => t('Introduction message - at 100% (or above)'),
-    '#description' => t('Text above the message when the target is reached (or overreached).'),
+    '#description' => t('This message will be displayed when the target is reached (or exceeded), usually above the progress bar.'),
     '#type' => 'textarea',
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['full_intro_message'],
   );
   $element['options']['texts']['full_status_message'] = array(
     '#title' => t('Status message - at 100% (or above)'),
-    '#description' => t('Text below the message when the target is reached (or overreached).'),
+    '#description' => t('This message will be displayed when the target is reached (or exceeded), usually below the progress bar'),
     '#type' => 'textarea',
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['full_status_message'],
