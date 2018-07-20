@@ -1,23 +1,26 @@
 $ = jQuery
 
-formatNumber = (now) ->
-  num = ''
-  # Add thousand separators to the number
-  zeros = 0
-  now = Math.round(now)
-  if now == 0
-    return '0'
-  while now > 0
-    while zeros > 0
-      num = '0' + num
-      zeros -= 1
-    rest = now % 1000
-    zeros = 3 - rest.toString().length
-    num = rest + ',' + num
-    now = (now - rest) / 1000
+if Drupal.formatNumber?
+  formatNumber = (now) -> Drupal.formatNumber(now, 0)
+else
+  formatNumber = (now) ->
+    num = ''
+    # Add thousand separators to the number
+    zeros = 0
+    now = Math.round(now)
+    if now == 0
+      return '0'
+    while now > 0
+      while zeros > 0
+        num = '0' + num
+        zeros -= 1
+      rest = now % 1000
+      zeros = 3 - rest.toString().length
+      num = rest + ',' + num
+      now = (now - rest) / 1000
 
-  # cut last thousand separator from output.
-  return num.slice(0, num.length - 1)
+    # cut last thousand separator from output.
+    return num.slice(0, num.length - 1)
 
 
 class PgbarItem

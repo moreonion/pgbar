@@ -9,28 +9,34 @@ var $, PgbarItem, formatNumber;
 
 $ = jQuery;
 
-formatNumber = function formatNumber(now) {
-  var num, rest, zeros;
-  num = '';
-  // Add thousand separators to the number
-  zeros = 0;
-  now = Math.round(now);
-  if (now === 0) {
-    return '0';
-  }
-  while (now > 0) {
-    while (zeros > 0) {
-      num = '0' + num;
-      zeros -= 1;
+if (Drupal.formatNumber != null) {
+  formatNumber = function formatNumber(now) {
+    return Drupal.formatNumber(now, 0);
+  };
+} else {
+  formatNumber = function formatNumber(now) {
+    var num, rest, zeros;
+    num = '';
+    // Add thousand separators to the number
+    zeros = 0;
+    now = Math.round(now);
+    if (now === 0) {
+      return '0';
     }
-    rest = now % 1000;
-    zeros = 3 - rest.toString().length;
-    num = rest + ',' + num;
-    now = (now - rest) / 1000;
-  }
-  // cut last thousand separator from output.
-  return num.slice(0, num.length - 1);
-};
+    while (now > 0) {
+      while (zeros > 0) {
+        num = '0' + num;
+        zeros -= 1;
+      }
+      rest = now % 1000;
+      zeros = 3 - rest.toString().length;
+      num = rest + ',' + num;
+      now = (now - rest) / 1000;
+    }
+    // cut last thousand separator from output.
+    return num.slice(0, num.length - 1);
+  };
+}
 
 PgbarItem = function () {
   function PgbarItem(settings1, wrapper) {

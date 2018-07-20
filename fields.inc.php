@@ -293,6 +293,9 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $element[] = $d;
   }
   if (!empty($element)) {
+    if (module_exists('format_number')) {
+      format_number_add_js();
+    }
     $element['#attached']['js'] = [
       drupal_get_path('module', 'pgbar') . '/pgbar.js',
       ['type' => 'setting', 'data' => $settings],

@@ -37,6 +37,7 @@ function pgbar_preprocess_pgbar(&$v) {
   }
 
   $v['percentage'] = min(array($v['current'] / $v['target'] * 100, 100));
+  $v['format_fn'] = function_exists('format_number') ? 'format_number' : 'number_format';
 }
 
 /**
