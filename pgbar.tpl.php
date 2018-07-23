@@ -1,7 +1,18 @@
 <?php
 /**
  * @file
- * Default template for progressbars.
+ * Displays a progess bar.
+ *
+ * Available variables:
+ * - $format_fn: A function for formatting numbers with the same signature as
+ *   the two argument version of number_format().
+ * - $current: (int) The current count.
+ * - $target: (int) The current target.
+ * - $percentage: (float) The percentage.
+ * - $goal_reached: (bool) TRUE when the current count has reached the target.
+ * - $texts: An array with configured texts.
+ * - $html_id: ID used to bind the field settings. This needs to be in the
+ *   ID of the outermost wrapper.
  */
 
 $vars['!current'] = '<strong>' . $format_fn($current, 0) . '</strong>';
