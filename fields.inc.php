@@ -78,7 +78,7 @@ function _pgbar_add_item_defaults(array $item) {
     'state' => 1,
     'options' => [
       'target' => [
-        'target'    => '200',
+        'target'    => '500',
         'threshold' => '90',
         'offset'    => '0',
       ],
@@ -141,8 +141,8 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     ),
   );
   $element['options']['target']['target'] = array(
-    '#title' => t('Goal for this action'),
-    '#description' => t('This value will be used as goal in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once current goal is (nearly) reached.'),
+    '#title' => t('Target number for this action'),
+    '#description' => t('This value will be used as the target in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once the current target number is nearly reached.'),
     '#type' => 'textfield',
     '#default_value' => $item['options']['target']['target'],
     '#size' => 60,
@@ -150,7 +150,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   );
   $element['options']['target']['threshold'] = array(
     '#title' => t('Threshold percentage'),
-    '#description' => t('Use the smallest step from the above setting that is not yet reached to this percentage.'),
+    '#description' => t('Use the smallest target number from the above setting that is not yet reached to this percentage.'),
     '#type' => 'textfield',
     '#number_type' => 'integer',
     '#default_value' => $item['options']['target']['threshold'],
@@ -163,7 +163,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#default_value' => $item['options']['target']['offset'],
   );
   $element['options']['texts']['intro_message'] = array(
-    '#title' => t('Intro message'),
+    '#title' => t('Introduction message'),
     '#description' => t('This is the message that is displayed above the progress bar.'),
     '#type' => 'textarea',
     '#default_value' => $item['options']['texts']['intro_message'],
@@ -177,15 +177,15 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#default_value' => $item['options']['texts']['status_message'],
   );
   $element['options']['texts']['full_intro_message'] = array(
-    '#title' => t('Intro message at 100% (or above)'),
-    '#description' => t('Intro message when the target is reached (or overreached).'),
+    '#title' => t('Introduction message - at 100% (or above)'),
+    '#description' => t('This message will be displayed when the target is reached (or exceeded), usually above the progress bar.'),
     '#type' => 'textarea',
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['full_intro_message'],
   );
   $element['options']['texts']['full_status_message'] = array(
-    '#title' => t('Status message at 100% (or above)'),
-    '#description' => t('Status message when the target is reached (or overreached).'),
+    '#title' => t('Status message - at 100% (or above)'),
+    '#description' => t('This message will be displayed when the target is reached (or exceeded), usually below the progress bar'),
     '#type' => 'textarea',
     '#rows' => 2,
     '#default_value' => $item['options']['texts']['full_status_message'],
