@@ -142,7 +142,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   );
   $element['options']['target']['target'] = array(
     '#title' => t('Target number for this action'),
-    '#description' => t('This value will be used as target in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once the current target number is nearly reached.'),
+    '#description' => t('This value will be used as the target in the progress bar. If you add multiple values separated by a comma the progress bar will switch to the next value once the current target number is nearly reached.'),
     '#type' => 'textfield',
     '#default_value' => $item['options']['target']['target'],
     '#size' => 60,
@@ -150,7 +150,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
   );
   $element['options']['target']['threshold'] = array(
     '#title' => t('Threshold percentage'),
-    '#description' => t('Use the smallest step from the above setting that is not yet reached to this percentage.'),
+    '#description' => t('Use the smallest target number from the above setting that is not yet reached to this percentage.'),
     '#type' => 'textfield',
     '#number_type' => 'integer',
     '#default_value' => $item['options']['target']['threshold'],
