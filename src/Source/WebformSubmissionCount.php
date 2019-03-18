@@ -44,6 +44,7 @@ class WebformSubmissionCount implements PluginInterface {
     $q = db_select('webform_submissions', 'ws');
     $q->addExpression('COUNT(ws.nid)');
     $q->condition('ws.nid', $nids, 'IN');
+    $q->condition('ws.is_draft', 0);
     return $q->execute()->fetchField();
   }
 
