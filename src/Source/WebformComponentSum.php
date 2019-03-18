@@ -51,6 +51,7 @@ class WebformComponentSum implements PluginInterface {
     $q->innerJoin('webform_component', 'wc', 'wsd.nid=wc.nid AND wc.cid=wsd.cid');
     $q->condition('wc.form_key', $form_key);
     $q->condition('wc.nid', $nids, 'IN');
+    $q->condition('ws.is_draft', 0);
     return $q->execute()->fetchField();
   }
 
