@@ -81,11 +81,11 @@ PgbarItem.fromElement = ($element) ->
   settings['vertical'] = $element.data('pgbarDirection') == 'vertical'
   return new PgbarItem(settings, $element)
 
-
 Drupal.behaviors.pgbar = {}
 Drupal.behaviors.pgbar.attach = (context, settings) ->
   $('.pgbar-wrapper[id]', context).each(->
     item = PgbarItem.fromElement($(this))
-    item.animateInitially()
-    item.poll()
+    if item.settings['autostart']
+      item.animateInitially()
+      item.poll()
   )

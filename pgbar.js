@@ -143,7 +143,9 @@ Drupal.behaviors.pgbar.attach = function (context, settings) {
   return $('.pgbar-wrapper[id]', context).each(function () {
     var item;
     item = PgbarItem.fromElement($(this));
-    item.animateInitially();
-    return item.poll();
+    if (item.settings['autostart']) {
+      item.animateInitially();
+      return item.poll();
+    }
   });
 };

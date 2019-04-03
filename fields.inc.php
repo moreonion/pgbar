@@ -289,6 +289,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       'pollingURL' => UrlGenerator::instance()->entityUrl($entity_type, $entity_id),
       'field_name' => $field['field_name'],
       'delta' => $delta,
+      'autostart' => TRUE,
     ];
     $element[] = $d;
   }
