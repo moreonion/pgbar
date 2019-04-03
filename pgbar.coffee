@@ -33,7 +33,11 @@ class PgbarItem
   poll: ->
     registry = Drupal.behaviors.polling.registry
     callback = (data) =>
-      to_abs = parseInt(data.pgbar[@settings.field_name][@settings.delta])
+      if @settings.extractor
+        val = @settings.extractor(data)
+      else
+        val = data.pgbar[@settings.field_name][@settings.delta]
+      to_abs = parseInt(val)
       @animate(to_abs) if to_abs != @current
       return
     registry.registerUrl(

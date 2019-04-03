@@ -57,8 +57,13 @@ PgbarItem = function () {
       var callback, registry;
       registry = Drupal.behaviors.polling.registry;
       callback = function callback(data) {
-        var to_abs;
-        to_abs = parseInt(data.pgbar[_this.settings.field_name][_this.settings.delta]);
+        var to_abs, val;
+        if (_this.settings.extractor) {
+          val = _this.settings.extractor(data);
+        } else {
+          val = data.pgbar[_this.settings.field_name][_this.settings.delta];
+        }
+        to_abs = parseInt(val);
         if (to_abs !== _this.current) {
           _this.animate(to_abs);
         }
