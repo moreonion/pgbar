@@ -29,11 +29,16 @@ class PgbarItem
     @current = 0
     @counter = $('.pgbar-counter', wrapper)
     @bars = $('.pgbar-current', wrapper)
+    if @settings.extractor
+      @extractor = @settings.extractor
+    else
+      @extractor = (data) =>
+        return parseInt(data.pgbar[@settings.field_name][@settings.delta])
 
   poll: ->
     registry = Drupal.behaviors.polling.registry
     callback = (data) =>
-      to_abs = parseInt(data.pgbar[@settings.field_name][@settings.delta])
+      to_abs = @extractor(data)
       @animate(to_abs) if to_abs != @current
       return
     registry.registerUrl(
@@ -81,11 +86,11 @@ PgbarItem.fromElement = ($element) ->
   settings['vertical'] = $element.data('pgbarDirection') == 'vertical'
   return new PgbarItem(settings, $element)
 
-
 Drupal.behaviors.pgbar = {}
 Drupal.behaviors.pgbar.attach = (context, settings) ->
   $('.pgbar-wrapper[id]', context).each(->
     item = PgbarItem.fromElement($(this))
-    item.animateInitially()
-    item.poll()
+    if item.settings['autostart']
+      item.animateInitially()
+      item.poll()
   )
