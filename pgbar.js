@@ -40,6 +40,8 @@ if (Drupal.formatNumber != null) {
 
 PgbarItem = function () {
   function PgbarItem(settings1, wrapper) {
+    var _this = this;
+
     _classCallCheck(this, PgbarItem);
 
     this.settings = settings1;
@@ -47,25 +49,27 @@ PgbarItem = function () {
     this.current = 0;
     this.counter = $('.pgbar-counter', wrapper);
     this.bars = $('.pgbar-current', wrapper);
+    if (this.settings.extractor) {
+      this.extractor = this.settings.extractor;
+    } else {
+      this.extractor = function (data) {
+        return parseInt(data.pgbar[_this.settings.field_name][_this.settings.delta]);
+      };
+    }
   }
 
   _createClass(PgbarItem, [{
     key: 'poll',
     value: function poll() {
-      var _this = this;
+      var _this2 = this;
 
       var callback, registry;
       registry = Drupal.behaviors.polling.registry;
       callback = function callback(data) {
-        var to_abs, val;
-        if (_this.settings.extractor) {
-          val = _this.settings.extractor(data);
-        } else {
-          val = data.pgbar[_this.settings.field_name][_this.settings.delta];
-        }
-        to_abs = parseInt(val);
-        if (to_abs !== _this.current) {
-          _this.animate(to_abs);
+        var to_abs;
+        to_abs = _this2.extractor(data);
+        if (to_abs !== _this2.current) {
+          _this2.animate(to_abs);
         }
       };
       return registry.registerUrl(this.settings.pollingURL, this.settings.id, callback);
@@ -73,7 +77,7 @@ PgbarItem = function () {
   }, {
     key: 'animate',
     value: function animate(to_abs) {
-      var _this2 = this;
+      var _this3 = this;
 
       var from_abs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.current;
 
@@ -91,7 +95,7 @@ PgbarItem = function () {
       this.counter.html(formatNumber(from_abs));
       duration = 500 + 1000 * diff;
       resetCounters = function resetCounters(num, fx) {
-        return _this2.counter.html(formatNumber(num));
+        return _this3.counter.html(formatNumber(num));
       };
       if (this.settings.vertical) {
         this.bars.height(from * 100 + '%');
@@ -119,11 +123,11 @@ PgbarItem = function () {
   }, {
     key: 'animateInitially',
     value: function animateInitially() {
-      var _this3 = this;
+      var _this4 = this;
 
       var animation;
       animation = function animation() {
-        return _this3.animate(_this3.settings.current);
+        return _this4.animate(_this4.settings.current);
       };
       return window.setTimeout(animation, 2000);
     }

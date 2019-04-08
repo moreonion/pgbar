@@ -29,15 +29,16 @@ class PgbarItem
     @current = 0
     @counter = $('.pgbar-counter', wrapper)
     @bars = $('.pgbar-current', wrapper)
+    if @settings.extractor
+      @extractor = @settings.extractor
+    else
+      @extractor = (data) =>
+        return parseInt(data.pgbar[@settings.field_name][@settings.delta])
 
   poll: ->
     registry = Drupal.behaviors.polling.registry
     callback = (data) =>
-      if @settings.extractor
-        val = @settings.extractor(data)
-      else
-        val = data.pgbar[@settings.field_name][@settings.delta]
-      to_abs = parseInt(val)
+      to_abs = @extractor(data)
       @animate(to_abs) if to_abs != @current
       return
     registry.registerUrl(
