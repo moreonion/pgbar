@@ -1,0 +1,7 @@
+name = pgbar webform integration
+description = Webform specific plugins and optimizations
+core = 7.x
+php = 7.0
+
+dependencies[] = pgbar:pgbar
+dependencies[] = webform:webform
