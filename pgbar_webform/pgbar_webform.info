@@ -4,4 +4,5 @@ core = 7.x
 php = 7.0
 
 dependencies[] = pgbar:pgbar
+dependencies[] = psr0:psr0
 dependencies[] = webform:webform
