@@ -56,9 +56,8 @@ class WebformSubmissionCount implements PluginInterface {
    * Build the configuration form for the field widget.
    */
   public function widgetForm($item) {
-    $form = [];
-    $form += $this->addNids->widgetForm($item);
-    $form += $this->externalSource->widgetForm($item);
+    $form = $this->addNids->widgetForm($item);
+    $form = array_merge_recursive($form, $this->externalSource->widgetForm($item));
     return $form;
   }
 

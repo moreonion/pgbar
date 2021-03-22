@@ -45,7 +45,28 @@ class ExternalSource {
       '#type' => 'textfield',
       '#default_value' => $source_options['find_at'],
     ];
+    $form['#element_validate'][] = [$this, 'widgetValidate'];
     return $form;
+  }
+
+
+  /**
+   * Element validate callback for widgetForm().
+   *
+   * @see Drupal\pgbar\Source\ExternalSource::widgetForm()
+   */
+  public function widgetValidate($element, &$form_state, $form) {
+    $item = &$form_state['values'];
+    foreach ($element['#parents'] as $key) {
+      $item = &$item[$key];
+    }
+    if (!empty($item['external_url']) && !valid_url($item['external_url'])) {
+      form_error($element['external_url'], t('%name: Please enter a valid URL for the external source.', ['%name' => $element['#title']]));
+    }
+    // A very basic regexp to do some trivial checking: Allow ASCII, ".", "-" and "_".
+    if (!empty($item['find_at']) && !preg_match('/^[a-zA-Z0-9.-_]+$/', $item['find_at'])) {
+      form_error($element['find_at'], t('%name: Please enter a valid JSON path for the external source.', ['%name' => $element['#title']]));
+    }
   }
 
 }
