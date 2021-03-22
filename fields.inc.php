@@ -196,6 +196,12 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     '#default_value' => $item['options']['display']['template'],
     '#type' => 'textfield',
   );
+  $element['options']['display']['autostart'] = [
+    '#title' => t('Autostart'),
+    '#description' => t('Start the animation and polling automatically'),
+    '#type' => 'checkbox',
+    '#default_value' => isset($item['options']['display']['autostart']) ? $item['options']['display']['autostart'] : TRUE,
+  ];
   $source = _pgbar_source_plugin_load(NULL, $field, $instance);
   if ($source && ($source_form = $source->widgetForm($item))) {
     $element['options']['source'] += $source_form;
@@ -296,7 +302,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       'find_at' => $find_at,
       'field_name' => $field['field_name'],
       'delta' => $delta,
-      'autostart' => TRUE,
+      'autostart' => $item['options']['display']['autostart'] ? TRUE : FALSE,
     ];
     $element[] = $d;
   }
