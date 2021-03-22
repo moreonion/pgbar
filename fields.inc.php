@@ -283,10 +283,14 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     if ($d['#target'] <= 0) {
       continue;
     }
+    $polling_url = UrlGenerator::instance()->entityUrl($entity_type, $entity_id);
+    if ($item['options']['source']['enable_external_url']) {
+      $polling_url = $item['options']['source']['external_url'] ?: $polling_url;
+    }
     $settings['pgbar'][$html_id] = [
       'current' => $current,
       'target' => $target,
-      'pollingURL' => UrlGenerator::instance()->entityUrl($entity_type, $entity_id),
+      'pollingURL' => $polling_url,
       'field_name' => $field['field_name'],
       'delta' => $delta,
       'autostart' => TRUE,
