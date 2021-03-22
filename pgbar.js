@@ -79,7 +79,7 @@ PgbarItem = /*#__PURE__*/function () {
         if (typeof d === "number" || typeof d === "string") {
           value = parseInt(d, 10);
 
-          if (!isNan(value)) {
+          if (!isNaN(value)) {
             return value;
           }
         } // return 0 if we did not find a number
