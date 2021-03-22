@@ -284,13 +284,16 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       continue;
     }
     $polling_url = UrlGenerator::instance()->entityUrl($entity_type, $entity_id);
+    $find_at = '';
     if ($item['options']['source']['enable_external_url']) {
       $polling_url = $item['options']['source']['external_url'] ?: $polling_url;
+      $find_at = $item['options']['source']['find_at'];
     }
     $settings['pgbar'][$html_id] = [
       'current' => $current,
       'target' => $target,
       'pollingURL' => $polling_url,
+      'find_at' => $find_at,
       'field_name' => $field['field_name'],
       'delta' => $delta,
       'autostart' => TRUE,

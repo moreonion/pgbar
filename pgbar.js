@@ -58,6 +58,36 @@ function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _d
 
       if (this.settings.extractor) {
         this.extractor = this.settings.extractor;
+      } else if (this.settings.find_at) {
+        this.extractor = function (data) {
+          var d, j, len, p, parts, value;
+          parts = _this.settings.find_at.split('.').filter(function (i) {
+            return i !== '';
+          });
+          d = data; // walk the path defined by parts
+
+          for (j = 0, len = parts.length; j < len; j++) {
+            p = parts[j];
+
+            if (d[p]) {
+              d = d[p];
+            } else {
+              // nothing found: return 0
+              return 0;
+            }
+          }
+
+          if (typeof d === "number" || typeof d === "string") {
+            value = parseInt(d, 10);
+
+            if (!isNan(value)) {
+              return value;
+            }
+          } // return 0 if we did not find a number
+
+
+          return 0;
+        };
       } else {
         this.extractor = function (data) {
           return parseInt(data.pgbar[_this.settings.field_name][_this.settings.delta]);

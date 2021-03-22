@@ -39,6 +39,12 @@ class ExternalSource {
       '#type' => 'textfield',
       '#default_value' => $source_options['external_url'],
     ];
+    $form['find_at'] = [
+      '#title' => t('Path to the value'),
+      '#description' => t('Enter a path to the value in the JSON to use. Separate parts by ".", index numbers are allowed. The file needs to be valid JSON data.'),
+      '#type' => 'textfield',
+      '#default_value' => $source_options['find_at'],
+    ];
     return $form;
   }
 

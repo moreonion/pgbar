@@ -31,6 +31,23 @@ class PgbarItem
     @bars = $('.pgbar-current', wrapper)
     if @settings.extractor
       @extractor = @settings.extractor
+    else if @settings.find_at
+      @extractor = (data) =>
+        parts = @settings.find_at.split('.').filter((i) => i != '')
+        d = data
+        # walk the path defined by parts
+        for p in parts
+          if d[p]
+            d = d[p]
+          else
+            # nothing found: return 0
+            return 0
+        if typeof d == "number" || typeof d == "string"
+          value = parseInt(d, 10)
+          if !isNan(value)
+            return value
+        # return 0 if we did not find a number
+        return 0
     else
       @extractor = (data) =>
         return parseInt(data.pgbar[@settings.field_name][@settings.delta])
