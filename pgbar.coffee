@@ -107,7 +107,13 @@ Drupal.behaviors.pgbar = {}
 Drupal.behaviors.pgbar.attach = (context, settings) ->
   $('.pgbar-wrapper[id]', context).each(->
     item = PgbarItem.fromElement($(this))
-    if item.settings['autostart']
+
+    # Do not animate initially for an external source with initial count 0.
+    # This doubles the animation due to the timeout timings between pgbar and
+    # polling.
+    if item.settings['external_url']
+      item.poll()
+    else if item.settings['autostart']
       item.animateInitially()
       item.poll()
   )
