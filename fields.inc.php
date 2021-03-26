@@ -303,6 +303,7 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
       'field_name' => $field['field_name'],
       'delta' => $delta,
       'autostart' => $item['options']['display']['autostart'] ? TRUE : FALSE,
+      'external_url' => $item['options']['source']['external_url'] ? TRUE : FALSE,
     ];
     $element[] = $d;
   }
