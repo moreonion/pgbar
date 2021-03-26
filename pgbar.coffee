@@ -29,6 +29,8 @@ class PgbarItem
     @current = 0
     @counter = $('.pgbar-counter', wrapper)
     @bars = $('.pgbar-current', wrapper)
+    @target = $('.pgbar-target', wrapper)
+    @target.html(formatNumber(@settings.target))
     if @settings.extractor
       @extractor = @settings.extractor
     else if @settings.find_at
@@ -52,6 +54,16 @@ class PgbarItem
       @extractor = (data) =>
         return parseInt(data.pgbar[@settings.field_name][@settings.delta])
 
+  selectTarget: (current) ->
+    t = 1
+    # copy the array
+    targets = @settings.targets.concat()
+    while targets.length > 0
+      t = targets.shift()
+      if (current * 100 / t) <= parseInt(@settings.threshold, 10)
+        return t
+    return t
+
   poll: ->
     registry = Drupal.behaviors.polling.registry
     callback = (data) =>
@@ -66,6 +78,10 @@ class PgbarItem
 
   animate: (to_abs, from_abs = @current) ->
     target = @settings.target
+    best_target = @selectTarget(to_abs)
+    if best_target != target
+      target = best_target
+      @target.html(formatNumber(target))
     if @settings.inverted
       from = 1 - from_abs / target
       to = 1 - to_abs / target

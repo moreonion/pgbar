@@ -126,7 +126,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     'texts' => array(
       '#type' => 'fieldset',
       '#title' => t('Texts'),
-      '#description' => t('Available tokens: !current, !current-animated, !target, !needed.')
+      '#description' => t('Available tokens: !current, !current-animated, !target, !target-animated, !needed.')
     ),
     'source' => array(
       '#type' => 'fieldset',
@@ -298,6 +298,8 @@ function pgbar_field_formatter_view($entity_type, $entity, $field, $instance, $l
     $settings['pgbar'][$html_id] = [
       'current' => $current,
       'target' => $target,
+      'targets' => $item['options']['target']['target'],
+      'threshold' => $item['options']['target']['threshold'],
       'pollingURL' => $polling_url,
       'find_at' => $find_at,
       'field_name' => $field['field_name'],

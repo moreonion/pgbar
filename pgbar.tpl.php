@@ -18,6 +18,7 @@
 $vars['!current'] = '<strong>' . $format_fn($current, 0) . '</strong>';
 $vars['!current-animated'] = '<strong class="pgbar-counter">' . $format_fn($current, 0) . '</strong>';
 $vars['!target'] = '<strong>' . $format_fn($target, 0) . '</strong>';
+$vars['!target-animated'] = '<strong class="pgbar-target">' . $format_fn($target, 0) . '</strong>';
 $vars['!needed'] = $format_fn($target - $current, 0);
 
 $intro_message  = format_string($goal_reached ? $texts['full_intro_message'] : $texts['intro_message'], $vars);

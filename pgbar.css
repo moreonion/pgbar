@@ -32,11 +32,6 @@
   position: relative;
 }
 
-.pgbar-target {
-  position: absolute;
-  right: 0;
-}
-
 
 .pgbar-wrapper {
   max-width: 40em;
