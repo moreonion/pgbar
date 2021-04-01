@@ -31,6 +31,7 @@ class PgbarItem
     @bars = $('.pgbar-current', wrapper)
     @target = $('.pgbar-target', wrapper)
     @target.html(formatNumber(@settings.target))
+    @needed = $('.pgbar-needed', wrapper)
     if @settings.extractor
       @extractor = @settings.extractor
     else if @settings.find_at
@@ -82,6 +83,7 @@ class PgbarItem
     if best_target != target
       target = best_target
       @target.html(formatNumber(target))
+      @needed.html(formatNumber(target - to_abs))
     if @settings.inverted
       from = 1 - from_abs / target
       to = 1 - to_abs / target

@@ -126,7 +126,7 @@ function pgbar_field_widget_form(&$form, &$form_state, $field, $instance, $langc
     'texts' => array(
       '#type' => 'fieldset',
       '#title' => t('Texts'),
-      '#description' => t('Available tokens: !current, !current-animated, !target, !target-animated, !needed.')
+      '#description' => t('Available tokens: !current, !current-animated, !target, !target-animated, !needed, !needed-animated.')
     ),
     'source' => array(
       '#type' => 'fieldset',

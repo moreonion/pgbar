@@ -20,6 +20,7 @@ $vars['!current-animated'] = '<strong class="pgbar-counter">' . $format_fn($curr
 $vars['!target'] = '<strong>' . $format_fn($target, 0) . '</strong>';
 $vars['!target-animated'] = '<strong class="pgbar-target">' . $format_fn($target, 0) . '</strong>';
 $vars['!needed'] = $format_fn($target - $current, 0);
+$vars['!needed-animated'] = '<span class="pgbar-needed">' . $format_fn($target - $current, 0) . '</span>';
 
 $intro_message  = format_string($goal_reached ? $texts['full_intro_message'] : $texts['intro_message'], $vars);
 $status_message = format_string($goal_reached ? $texts['full_status_message'] : $texts['status_message'], $vars) . "\n";
