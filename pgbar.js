@@ -54,6 +54,9 @@ PgbarItem = /*#__PURE__*/function () {
     this.current = 0;
     this.counter = $('.pgbar-counter', wrapper);
     this.bars = $('.pgbar-current', wrapper);
+    this.target = $('.pgbar-target', wrapper);
+    this.target.html(formatNumber(this.settings.target));
+    this.needed = $('.pgbar-needed', wrapper);
 
     if (this.settings.extractor) {
       this.extractor = this.settings.extractor;
@@ -95,6 +98,24 @@ PgbarItem = /*#__PURE__*/function () {
   }
 
   _createClass(PgbarItem, [{
+    key: "selectTarget",
+    value: function selectTarget(current) {
+      var t, targets;
+      t = 1; // copy the array
+
+      targets = this.settings.targets.concat();
+
+      while (targets.length > 0) {
+        t = targets.shift();
+
+        if (current * 100 / t <= parseInt(this.settings.threshold, 10)) {
+          return t;
+        }
+      }
+
+      return t;
+    }
+  }, {
     key: "poll",
     value: function poll() {
       var _this2 = this;
@@ -119,8 +140,15 @@ PgbarItem = /*#__PURE__*/function () {
       var _this3 = this;
 
       var from_abs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.current;
-      var diff, duration, from, resetCounters, target, to;
+      var best_target, diff, duration, from, resetCounters, target, to;
       target = this.settings.target;
+      best_target = this.selectTarget(to_abs);
+
+      if (best_target !== target) {
+        target = best_target;
+        this.target.html(formatNumber(target));
+        this.needed.html(formatNumber(target - to_abs));
+      }
 
       if (this.settings.inverted) {
         from = 1 - from_abs / target;
