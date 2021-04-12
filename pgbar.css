@@ -38,7 +38,7 @@
   margin-bottom: 1.5em;
 }
 
-.pgbar-wrapper p span {
+.pgbar-wrapper p span:not(.pgbar-needed) {
   display: block;
   margin-bottom: 1.5em;
 }
