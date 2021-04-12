@@ -90,8 +90,12 @@ function _pgbar_add_item_defaults(array $item) {
       ],
       'display' => [
         'template' => '',
+        'autostart' => TRUE,
       ],
-      'source' => [],
+      'source' => [
+        'enable_external_url' => FALSE,
+        'external_url' => '',
+      ],
     ],
   ], $item);
 }
