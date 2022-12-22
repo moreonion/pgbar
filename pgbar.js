@@ -147,8 +147,9 @@ PgbarItem = /*#__PURE__*/function () {
       if (best_target !== target) {
         target = best_target;
         this.target.html(formatNumber(target));
-        this.needed.html(formatNumber(target - to_abs));
       }
+
+      this.needed.html(formatNumber(target - to_abs));
 
       if (this.settings.inverted) {
         from = 1 - from_abs / target;
