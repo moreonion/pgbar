@@ -1,7 +1,14 @@
 {
+  "name": "pgbar",
+  "version": "1.0.0",
+  "description": "JavaScript behavior for the pgbar module.",
   "devDependencies": {
     "@babel/core": "^7.13.10",
     "@babel/preset-env": "^7.13.10",
     "coffeescript": "^2.5.1"
+  },
+  "dependencies": {},
+  "scripts": {
+    "build": "coffee -ctb pgbar.coffee"
   }
 }

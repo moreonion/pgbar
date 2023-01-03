@@ -147,7 +147,6 @@ PgbarItem = /*#__PURE__*/function () {
       if (best_target !== target) {
         target = best_target;
         this.target.html(formatNumber(target));
-        this.needed.html(formatNumber(target - to_abs));
       }
 
       if (this.settings.inverted) {
@@ -161,10 +160,13 @@ PgbarItem = /*#__PURE__*/function () {
       }
 
       this.counter.html(formatNumber(from_abs));
+      this.needed.html(formatNumber(target - from_abs));
       duration = 500 + 1000 * diff;
 
       resetCounters = function resetCounters(num, fx) {
-        return _this3.counter.html(formatNumber(num));
+        _this3.counter.html(formatNumber(num));
+
+        _this3.needed.html(formatNumber(target - num));
       };
 
       if (this.settings.vertical) {

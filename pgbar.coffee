@@ -83,7 +83,7 @@ class PgbarItem
     if best_target != target
       target = best_target
       @target.html(formatNumber(target))
-      @needed.html(formatNumber(target - to_abs))
+
     if @settings.inverted
       from = 1 - from_abs / target
       to = 1 - to_abs / target
@@ -94,10 +94,13 @@ class PgbarItem
       diff = to - from
 
     @counter.html(formatNumber(from_abs))
+    @needed.html(formatNumber(target - from_abs))
 
     duration = 500 + 1000 * diff
     resetCounters = (num, fx) =>
       @counter.html(formatNumber(num))
+      @needed.html(formatNumber(target - num))
+      return
 
     if @settings.vertical
       @bars.height(from * 100 + '%')
