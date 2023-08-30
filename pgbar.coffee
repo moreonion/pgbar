@@ -77,7 +77,7 @@ class PgbarItem
       callback
     )
 
-  animate: (to_abs, from_abs = @current) ->
+  animate: (to_abs, from_abs = @current, timeout = 0) ->
     target = @settings.target
     best_target = @selectTarget(to_abs)
     if best_target != target
@@ -93,24 +93,30 @@ class PgbarItem
       to = to_abs / target
       diff = to - from
 
+    # reset before animation
     @counter.html(formatNumber(from_abs))
     @needed.html(formatNumber(target - from_abs))
-
-    duration = 500 + 1000 * diff
-    resetCounters = (num, fx) =>
-      @counter.html(formatNumber(num))
-      @needed.html(formatNumber(target - num))
-      return
-
     if @settings.vertical
       @bars.height(from * 100 + '%')
-      @bars.animate({height: to * 100 + '%'}, {duration: duration})
     else
       @bars.width(from * 100 + '%')
-      @bars.animate({width: to * 100 + '%'}, {duration: duration})
-    @wrapper.animate({val: to_abs}, {duration: duration, step: resetCounters})
 
-    @current = to_abs
+    # animation
+    window.setTimeout =>
+      duration = 500 + 1000 * diff
+      resetCounters = (num, fx) =>
+        @counter.html(formatNumber(num))
+        @needed.html(formatNumber(target - num))
+        return
+
+      if @settings.vertical
+        @bars.animate({height: to * 100 + '%'}, {duration: duration})
+      else
+        @bars.animate({width: to * 100 + '%'}, {duration: duration})
+      @wrapper.animate({val: to_abs}, {duration: duration, step: resetCounters})
+
+      @current = to_abs
+    , timeout
 
   animateInitially: ->
     animation = => @animate(@settings.current)
