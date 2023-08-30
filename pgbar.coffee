@@ -97,8 +97,10 @@ class PgbarItem
     @counter.html(formatNumber(from_abs))
     @needed.html(formatNumber(target - from_abs))
     if @settings.vertical
+      @bars.css('transition', 'height')
       @bars.height(from * 100 + '%')
     else
+      @bars.css('transition', 'width')
       @bars.width(from * 100 + '%')
 
     # animation
