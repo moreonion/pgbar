@@ -119,8 +119,7 @@ class PgbarItem
     , timeout
 
   animateInitially: ->
-    animation = => @animate(@settings.current)
-    window.setTimeout(animation, 2000)
+    @animate(@settings.current, @current, 2000)
 
 PgbarItem.fromElement = ($element) ->
   id = $element.attr('id')
