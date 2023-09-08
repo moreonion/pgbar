@@ -140,7 +140,8 @@ PgbarItem = /*#__PURE__*/function () {
       var _this3 = this;
 
       var from_abs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.current;
-      var best_target, diff, duration, from, resetCounters, target, to;
+      var timeout = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 0;
+      var best_target, diff, from, target, to;
       target = this.settings.target;
       best_target = this.selectTarget(to_abs);
 
@@ -157,54 +158,59 @@ PgbarItem = /*#__PURE__*/function () {
         from = from_abs / target;
         to = to_abs / target;
         diff = to - from;
-      }
+      } // reset before animation
+
 
       this.counter.html(formatNumber(from_abs));
       this.needed.html(formatNumber(target - from_abs));
-      duration = 500 + 1000 * diff;
-
-      resetCounters = function resetCounters(num, fx) {
-        _this3.counter.html(formatNumber(num));
-
-        _this3.needed.html(formatNumber(target - num));
-      };
 
       if (this.settings.vertical) {
+        this.bars.css('transition', 'height');
         this.bars.height(from * 100 + '%');
-        this.bars.animate({
-          height: to * 100 + '%'
-        }, {
-          duration: duration
-        });
       } else {
+        this.bars.css('transition', 'width');
         this.bars.width(from * 100 + '%');
-        this.bars.animate({
-          width: to * 100 + '%'
-        }, {
-          duration: duration
-        });
-      }
+      } // animation
 
-      this.wrapper.animate({
-        val: to_abs
-      }, {
-        duration: duration,
-        step: resetCounters
-      });
-      return this.current = to_abs;
+
+      return window.setTimeout(function () {
+        var duration, resetCounters;
+        duration = 500 + 1000 * diff;
+
+        resetCounters = function resetCounters(num, fx) {
+          _this3.counter.html(formatNumber(num));
+
+          _this3.needed.html(formatNumber(target - num));
+        };
+
+        if (_this3.settings.vertical) {
+          _this3.bars.animate({
+            height: to * 100 + '%'
+          }, {
+            duration: duration
+          });
+        } else {
+          _this3.bars.animate({
+            width: to * 100 + '%'
+          }, {
+            duration: duration
+          });
+        }
+
+        _this3.wrapper.animate({
+          val: to_abs
+        }, {
+          duration: duration,
+          step: resetCounters
+        });
+
+        return _this3.current = to_abs;
+      }, timeout);
     }
   }, {
     key: "animateInitially",
     value: function animateInitially() {
-      var _this4 = this;
-
-      var animation;
-
-      animation = function animation() {
-        return _this4.animate(_this4.settings.current);
-      };
-
-      return window.setTimeout(animation, 2000);
+      return this.animate(this.settings.current, this.current, 2000);
     }
   }]);
 
