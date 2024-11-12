@@ -55,3 +55,12 @@ function pgbar_pgbar_source_plugin_info() {
   $p['null'] = '\\Drupal\\pgbar\\Source\\StaticCount';
   return $p;
 }
+
+/**
+ * Implements hook_d7csp_hosts().
+ */
+function pgbar_d7csp_hosts() {
+  // For setting a pgbar’s initial height/width.
+  $hosts['style-src'] = "'unsafe-inline'";
+  return $hosts;
+}
